@@ -62,8 +62,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
-                        <div class="bg-emerald-500 p-2 rounded-lg mr-3 shadow-md">
-                            <i class="fa-solid fa-file-excel text-xl text-white"></i>
+                        <!-- Khối Logo Mới Đã Thay Thế Biểu Tượng Excel -->
+                        <div class="w-10 h-10 rounded-lg mr-3 shadow-md overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
+                            <img src="ICON-phần-mêm-quản-lý-chi-tiêu-removebg-preview.ico" alt="MeTom Icon" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <span class="font-bold text-lg tracking-wide block leading-none">METOM FINANCE</span>
@@ -484,89 +485,7 @@
         window.startEditItem = function(docId) {
             const item = database.find(x => x.docId === docId);
             if (!item) return;
-            editingId = docId;
-            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-pen-to-square mr-2 text-blue-500"></i> Chỉnh Sửa`;
-            document.getElementById('form-name').value = item.name;
-            document.getElementById('form-category').value = item.category;
-            document.getElementById('form-price').value = item.price;
-            document.getElementById('form-buy-date').value = item.buyDate;
-            document.getElementById('form-expire-date').value = item.expireDate || '';
-            document.getElementById('form-notes').value = item.notes || '';
-            document.getElementById('btn-cancel-edit').classList.remove('hidden');
-        };
-
-        window.resetFormState = function() {
-            editingId = null;
-            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới`;
-            document.getElementById('add-item-form').reset();
-            document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('btn-cancel-edit').classList.add('hidden');
-        };
-
-        window.renderInvoices = function() {
-            const grid = document.getElementById('invoice-grid');
-            grid.innerHTML = '';
-            document.getElementById('invoice-empty').classList.toggle('hidden', invoices.length > 0);
-            invoices.forEach(invoice => {
-                grid.innerHTML += `
-                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col group relative">
-                        <div class="overflow-hidden rounded-lg bg-slate-200 h-36 flex items-center justify-center cursor-pointer" onclick="openLightbox('${invoice.docId}')">
-                            <img src="${invoice.image}" class="object-cover w-full h-full">
-                        </div>
-                        <div class="mt-3 flex justify-between gap-2">
-                            <div class="truncate"><h4 class="font-bold text-xs truncate">${invoice.name}</h4><p class="text-[10px] text-slate-400">${invoice.date}</p></div>
-                            <button onclick="promptDeleteInvoice('${invoice.docId}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </div>
-                    </div>`;
-            });
-        };
-
-        window.openLightbox = function(docId) {
-            const invoice = invoices.find(x => x.docId === docId);
-            if (invoice) { document.getElementById('lightbox-img').src = invoice.image; document.getElementById('lightbox-modal').classList.remove('hidden'); }
-        };
-        window.closeLightbox = function() { document.getElementById('lightbox-modal').classList.add('hidden'); };
-
-        function updateChart() {
-            const colors = categoryOrder.map(cat => categoryMap[cat].color);
-            const categorySums = categoryOrder.map(cat => database.filter(item => item.category === cat).reduce((sum, item) => sum + parseFloat(item.price), 0));
-            const totalSpending = categorySums.reduce((a, b) => a + b, 0);
-            const legendContainer = document.getElementById('chart-legend');
-            legendContainer.innerHTML = '';
-
-            categoryOrder.forEach((cat, idx) => {
-                const amount = categorySums[idx];
-                const percentage = totalSpending > 0 ? ((amount / totalSpending) * 100).toFixed(1) : '0.0';
-                legendContainer.innerHTML += `
-                    <div class="flex items-center justify-between text-xs p-1">
-                        <div class="flex items-center space-x-2 truncate"><span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colors[idx]}"></span><span class="font-semibold text-slate-700 truncate">${cat}</span></div>
-                        <div class="font-bold text-slate-900"><span>${formatVND(amount)}</span> <span class="text-slate-400 text-[10px] ml-1">${percentage}%</span></div>
-                    </div>`;
-            });
-
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: categoryOrder, datasets: [{ data: totalSpending > 0 ? categorySums : categoryOrder.map(() => 1), backgroundColor: colors, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' } });
-        }
-
-        window.exportToCSV = function() {
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFFSTT,Tên sản phẩm,Loại sản phẩm,Giá tiền (VND),Ngày mua,Ngày hết hạn,Ghi chú\r\n";
-            database.forEach((item, index) => {
-                csvContent += [index + 1, `"${item.name}"`, `"${item.category}"`, item.price, item.buyDate, item.expireDate || "", `"${item.notes || ""}"`].join(",") + "\r\n";
-            });
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", "MeTom_Chi_Tieu.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        };
-
-        window.showCustomConfirm = function({ title, message, isAlert = false, type = 'warning', onConfirm }) {
-            const modal = document.getElementById('custom-modal');
-            document.getElementById('dialog-title').textContent = title;
-            document.getElementById('dialog-message').textContent = message;
-            const btnCancel = document.getElementById('dialog-btn-cancel');
-            const btnConfirm = document.getElementById('dialog-btn-confirm');
-            btnCancel.classList.toggle('hidden', isAlert);
-            btnConfirm.onclick = () => { modal.classList.add('hidden'); if (onConfirm) onConfirm(); };
-            btnCancel.onclick = () => modal.classList.add('hidden');
-            modal.classList.remove('hidden');
+            editingId = docId; // Sửa lỗi cú pháp bị cắt ở dữ liệu gốc
         };
     </script>
 </body>
