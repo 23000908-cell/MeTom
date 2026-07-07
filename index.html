@@ -139,6 +139,7 @@
                         </button>
                     </div>
 
+                    <!-- Nội dung bảng chi tiêu chính -->
                     <div id="tab-table-content" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
                         <div class="px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
                             <div>
@@ -185,6 +186,43 @@
                             <div id="invoice-empty" class="hidden text-center py-12 text-slate-400">Không có hóa đơn</div>
                         </div>
                     </div>
+
+                    <!-- KHU VỰC QUẢNG CÁO & VOUCHER ĐỂ LẤP PHẦN TRỐNG TRẮNG (HƯỚNG 1) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Banner Đối tác Ngân hàng -->
+                        <div class="bg-gradient-to-br from-indigo-900 to-purple-800 text-white p-5 rounded-2xl shadow-sm border border-indigo-950 flex flex-col justify-between relative overflow-hidden group">
+                            <div class="absolute -right-6 -bottom-6 text-indigo-700/20 text-9xl transform -rotate-12 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-credit-card"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <span class="bg-amber-500 text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md tracking-wider">🔥 HOT AFFILIATE</span>
+                                <h4 class="font-bold text-base mt-2 leading-snug">Mở Thẻ Lấy Ngay 50k<br>Miễn Phí Số Đẹp</h4>
+                                <p class="text-xs text-indigo-200 mt-1.5 max-w-[85%]">Đăng ký online trong 2 phút, nhận ưu đãi hoàn tiền 10% khi thanh toán bằng mã QR trường học.</p>
+                            </div>
+                            <div class="mt-4 relative z-10">
+                                <a href="https://your-affiliate-link.com" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-100 text-indigo-900 text-xs font-bold px-4 py-2 rounded-xl transition shadow-md">
+                                    <span>Mở thẻ ngay</span><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Banner Ưu đãi sinh viên -->
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden group">
+                            <div class="absolute -right-4 -bottom-6 text-slate-100 text-9xl transform rotate-12 group-hover:scale-110 transition duration-300">
+                                <i class="fa-solid fa-tags"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <span class="bg-rose-50 text-rose-600 border border-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-md">VOUCHER ĐỘC QUYỀN</span>
+                                <h4 class="font-bold text-slate-800 text-base mt-2 leading-snug">Mã Giảm 30k ShopeeFood / Grab</h4>
+                                <p class="text-xs text-slate-400 mt-1.5 max-w-[85%]">Nhập mã <span class="font-mono font-bold text-rose-600 bg-rose-50 px-1 rounded">METOM30</span> áp dụng cho các quán ăn đối tác gần khu vực KTX và trường đại học.</p>
+                            </div>
+                            <div class="mt-4 relative z-10">
+                                <button onclick="navigator.clipboard.writeText('METOM30'); alert('Đã sao chép mã giảm giá!')" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md">
+                                    <i class="fa-solid fa-copy"></i><span>Sao chép mã</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Cột Phải Form và Biểu đồ -->
@@ -229,6 +267,14 @@
                 <button id="dialog-btn-cancel" onclick="closeCustomModal()" class="bg-slate-100 px-4 py-2 rounded-xl text-sm font-bold">Hủy bỏ</button>
                 <button id="dialog-btn-confirm" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Đồng ý</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Xem Ảnh Hóa Đơn -->
+    <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onclick="closeLightbox()">
+        <div class="max-w-3xl max-h-full relative">
+            <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
+            <button class="absolute top-2 right-2 text-white bg-black/40 hover:bg-black/60 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
 
@@ -337,14 +383,13 @@
             }
         }
 
-        // CHỨC NĂNG SỬA DỮ LIỆU CHUẨN XÁC
+        // CHỨC NĂNG SỬA DỮ LIỆU
         window.startEditItem = function(docId) {
             const item = database.find(x => x.docId === docId);
             if (!item) return;
 
             editingId = docId;
 
-            // Đổ dữ liệu cũ ngược lại Form bên phải để người dùng sửa
             document.getElementById('form-name').value = item.name;
             document.getElementById('form-category').value = item.category;
             document.getElementById('form-price').value = item.price;
@@ -352,12 +397,10 @@
             document.getElementById('form-expire-date').value = item.expireDate || '';
             document.getElementById('form-notes').value = item.notes || '';
 
-            // Cập nhật giao diện Trạng thái chỉnh sửa
             document.getElementById('form-title').innerHTML = `<i id="form-icon" class="fa-solid fa-pen-to-square mr-2 text-blue-500"></i> Chỉnh Sửa Sản Phẩm`;
             document.getElementById('btn-submit').textContent = "Cập nhật thay đổi";
-            document.getElementById('btn-cancel-edit').classList.remove('hidden'); // Hiện nút Đặt lại / Hủy
+            document.getElementById('btn-cancel-edit').classList.remove('hidden');
             
-            // Cuộn mượt màn hình lên form ở mobile nếu cần
             document.getElementById('add-item-form').scrollIntoView({ behavior: 'smooth' });
         };
 
@@ -367,7 +410,6 @@
             document.getElementById('add-item-form').reset();
             document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
             
-            // Khôi phục giao diện form thêm mới ban đầu
             document.getElementById('form-title').innerHTML = `<i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới`;
             document.getElementById('btn-submit').textContent = "Lưu dữ liệu";
             document.getElementById('btn-cancel-edit').classList.add('hidden');
@@ -562,7 +604,6 @@
                 chartInstance.data.datasets[0].data = dataValues;
                 chartInstance.update();
             } else {
-                const ctx = document.getElementById('categoryChart').getContext('2m'); // Tránh lỗi context chart render
                 const realCtx = document.getElementById('categoryChart');
                 if(!realCtx) return;
                 chartInstance = new Chart(realCtx, {
