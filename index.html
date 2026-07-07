@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Tính Quản Lý Tiêu Dùng Sinh Hoạt</title>
+    <title>MeTom - Quản Lý Tiêu Dùng Sinh Viên</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -16,129 +16,136 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
         }
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
-    <!-- Header & Navigation -->
-    <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <div class="bg-emerald-500 p-2 rounded-lg mr-3 shadow-md">
-                        <i class="fa-solid fa-file-excel text-xl text-white"></i>
-                    </div>
-                    <div>
-                        <span class="font-bold text-lg tracking-wide block leading-none">QUẢN LÝ TIÊU DÙNG v2.6</span>
-                        <span class="text-xs text-blue-300">Trang Tính & Kho Hóa Đơn Đồng Bộ Màu Sắc</span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="openDriveModal()" class="bg-blue-800 hover:bg-blue-700 border border-blue-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm">
-                        <i class="fa-brands fa-google-drive mr-2 text-yellow-400"></i> Đưa lên Google Drive
-                    </button>
-                    <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm">
-                        <i class="fa-solid fa-download mr-2"></i> Xuất Excel / CSV
-                    </button>
-                </div>
+    <!-- KHU VỰC ĐĂNG NHẬP / ĐĂNG KÝ (Hiện đầu tiên nếu chưa đăng nhập) -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl border border-slate-100">
+            <div class="text-center mb-6">
+                <div class="bg-blue-900 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-md mb-3 text-2xl font-bold">M</div>
+                <h3 id="auth-title" class="text-xl font-bold text-slate-800">Đăng Nhập Vào MeTom</h3>
+                <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Quản lý tiêu dùng thông minh dành cho sinh viên</p>
             </div>
-        </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        
-        <!-- Dashboard Summary Metrics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <!-- Card 1: Total Spend -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between transition-transform hover:scale-[1.01]">
-                <div>
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng chi tiêu tháng này</p>
-                    <p id="total-spend" class="text-2xl font-bold text-blue-900 mt-1">0 đ</p>
-                </div>
-                <div class="p-3.5 bg-blue-50 text-blue-700 rounded-2xl">
-                    <i class="fa-solid fa-wallet text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 2: Total Items -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between transition-transform hover:scale-[1.01]">
-                <div>
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng số sản phẩm</p>
-                    <p id="total-items" class="text-2xl font-bold text-slate-800 mt-1">0 SP</p>
-                </div>
-                <div class="p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl">
-                    <i class="fa-solid fa-basket-shopping text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 3: Expired Products -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between transition-transform hover:scale-[1.01]">
-                <div>
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Quá hạn / Cần thanh toán</p>
-                    <p id="expired-count" class="text-2xl font-bold text-rose-600 mt-1">0 SP</p>
-                </div>
-                <div class="p-3.5 bg-rose-50 text-rose-700 rounded-2xl">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-                </div>
-            </div>
-
-            <!-- Card 4: Expiring Soon -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between transition-transform hover:scale-[1.01]">
-                <div>
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hạn (Dưới 3 ngày)</p>
-                    <p id="expiring-count" class="text-2xl font-bold text-amber-500 mt-1">0 SP</p>
-                </div>
-                <div class="p-3.5 bg-amber-50 text-amber-700 rounded-2xl">
-                    <i class="fa-solid fa-hourglass-half text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Workspace Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Left Panel: Main Spreadsheet Table & Invoice Vault -->
-            <div class="lg:col-span-2 space-y-6">
-                
-                <!-- Tab View Navigation -->
-                <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 flex space-x-1">
-                    <button id="btn-tab-table" onclick="switchTab('table')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white">
-                        <i class="fa-solid fa-table-list"></i>
-                        <span>Bảng Chi Tiêu Chi Tiết</span>
-                    </button>
-                    <button id="btn-tab-vault" onclick="switchTab('vault')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-receipt"></i>
-                        <span>Kho Hóa Đơn Số Hóa</span>
-                        <span id="invoice-count-badge" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">0</span>
-                    </button>
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Email Sinh Viên *</label>
+                    <input type="email" id="auth-email" required placeholder="example@student.edu.vn" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Mật Khẩu *</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                
+                <button type="submit" id="btn-auth-submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập
+                </button>
+            </form>
 
-                <!-- Tab Area 1: Main Spreadsheet Table -->
-                <div id="tab-table-content" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                    <div class="px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-base flex items-center">
-                                <i class="fa-solid fa-table text-blue-600 mr-2"></i> Bảng Nhập Liệu Tiêu Dùng
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-0.5">Sản phẩm tự động gom nhóm sắp xếp theo danh mục khoa học</p>
+            <div class="text-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+                <span id="auth-switch-text">Chưa có tài khoản?</span>
+                <button onclick="toggleAuthMode()" id="btn-auth-switch" class="text-blue-600 font-bold ml-1 hover:underline">Đăng ký ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP INTERFACE -->
+    <div id="app-screen" class="hidden">
+        <!-- Header & Navigation -->
+        <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="bg-emerald-500 p-2 rounded-lg mr-3 shadow-md">
+                            <i class="fa-solid fa-file-excel text-xl text-white"></i>
                         </div>
-                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                            <select id="filter-category" onchange="renderTable()" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700">
+                        <div>
+                            <span class="font-bold text-lg tracking-wide block leading-none">METOM FINANCE</span>
+                            <span id="user-display-email" class="text-xs text-blue-300">Đang tải tài khoản...</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm">
+                            <i class="fa-solid fa-download mr-2"></i> Xuất CSV
+                        </button>
+                        <button onclick="handleLogout()" class="bg-rose-700 hover:bg-rose-600 px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm" title="Đăng xuất">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+            <!-- Thông số thẻ -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng chi tiêu tháng này</p>
+                        <p id="total-spend" class="text-2xl font-bold text-blue-990 mt-1">0 đ</p>
+                    </div>
+                    <div class="p-3.5 bg-blue-50 text-blue-700 rounded-2xl"><i class="fa-solid fa-wallet text-xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng số sản phẩm</p>
+                        <p id="total-items" class="text-2xl font-bold text-slate-800 mt-1">0 SP</p>
+                    </div>
+                    <div class="p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl"><i class="fa-solid fa-basket-shopping text-xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Quá hạn / Cần đóng</p>
+                        <p id="expired-count" class="text-2xl font-bold text-rose-600 mt-1">0 SP</p>
+                    </div>
+                    <div class="p-3.5 bg-rose-50 text-rose-700 rounded-2xl"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hạn (Dưới 3 ngày)</p>
+                        <p id="expiring-count" class="text-2xl font-bold text-amber-500 mt-1">0 SP</p>
+                    </div>
+                    <div class="p-3.5 bg-amber-50 text-amber-700 rounded-2xl"><i class="fa-solid fa-hourglass-half text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- Gợi ý tính năng tiết kiệm -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-2xl mb-6 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-amber-500 text-white p-2.5 rounded-xl"><i class="fa-solid fa-gift text-lg"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Mẹo tiết kiệm tháng này từ MeTom</h4>
+                        <p class="text-xs text-slate-500">Mở tài khoản số đẹp ngân hàng miễn phí, nhận ngay hoàn tiền 10% khi đi siêu thị.</p>
+                    </div>
+                </div>
+                <a href="https://your-affiliate-link-here.com" target="_blank" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-sm shrink-0">Nhận Thẻ Ngay</a>
+            </div>
+
+            <!-- Bảng dữ liệu và Form -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 flex space-x-1">
+                        <button id="btn-tab-table" onclick="switchTab('table')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white">
+                            <i class="fa-solid fa-table-list"></i><span>Bảng Chi Tiêu Chi Tiết</span>
+                        </button>
+                        <button id="btn-tab-vault" onclick="switchTab('vault')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50">
+                            <i class="fa-solid fa-receipt"></i><span>Kho Hóa Đơn Số Hóa</span>
+                            <span id="invoice-count-badge" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">0</span>
+                        </button>
+                    </div>
+
+                    <div id="tab-table-content" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+                        <div class="px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+                            <div>
+                                <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-table text-blue-600 mr-2"></i> Bảng Nhập Liệu Tiêu Dùng</h2>
+                            </div>
+                            <select id="filter-category" onchange="renderTable()" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none">
                                 <option value="all">Tất cả danh mục</option>
                                 <option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option>
                                 <option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option>
@@ -147,221 +154,119 @@
                                 <option value="Điện, Nước & Internet">Điện, Nước & Internet</option>
                                 <option value="Khác">Khác</option>
                             </select>
-                            <button onclick="promptResetData()" class="text-xs text-rose-600 hover:text-white border border-rose-200 hover:bg-rose-600 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                                <i class="fa-solid fa-rotate-left"></i> Đặt lại
-                            </button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[500px]">
+                            <table class="min-w-full divide-y divide-slate-200">
+                                <thead class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-center w-12">STT</th>
+                                        <th class="px-4 py-3 text-left">Sản phẩm</th>
+                                        <th class="px-4 py-3 text-left">Danh Mục</th>
+                                        <th class="px-4 py-3 text-right">Giá Tiền</th>
+                                        <th class="px-4 py-3 text-center">Mua / Hết</th>
+                                        <th class="px-4 py-3 text-center w-24">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body" class="bg-white divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Table Container -->
-                    <div class="overflow-x-auto max-h-[500px]">
-                        <table class="min-w-full divide-y divide-slate-200">
-                            <thead class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-200">
-                                <tr>
-                                    <th class="px-4 py-3 text-center w-12">STT</th>
-                                    <th class="px-4 py-3 text-left">Sản phẩm / Ghi chú</th>
-                                    <th class="px-4 py-3 text-left">Danh Mục</th>
-                                    <th class="px-4 py-3 text-right">Giá Tiền</th>
-                                    <th class="px-4 py-3 text-center">Mua / Hết</th>
-                                    <th class="px-4 py-3 text-center w-24">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body" class="bg-white divide-y divide-slate-100 text-sm">
-                                <!-- Dynamic rendering -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tab Area 2: Invoice Vault (Kho hóa đơn) -->
-                <div id="tab-vault-content" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h2 class="font-bold text-slate-800 text-base flex items-center">
-                                <i class="fa-solid fa-receipt text-emerald-600 mr-2"></i> Kho Lưu Trữ Hóa Đơn Số Hóa
-                            </h2>
-                            <p class="text-xs text-slate-400 mt-1">Lưu trữ ảnh hóa đơn, biên lai chuyển khoản để đối chiếu khi cần</p>
+                    <!-- Kho Hóa Đơn -->
+                    <div id="tab-vault-content" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
+                            <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-receipt text-emerald-600 mr-2"></i> Kho Lưu Trữ Hóa Đơn</h2>
+                            <label class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-sm">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Tải hóa đơn lên
+                                <input type="file" id="invoice-file-input" accept="image/*" class="hidden" onchange="handleInvoiceUpload(event)">
+                            </label>
                         </div>
-                        
-                        <!-- Upload Trigger Button -->
-                        <label class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-sm transition">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Tải hóa đơn lên
-                            <input type="file" id="invoice-file-input" accept="image/*" class="hidden" onchange="handleInvoiceUpload(event)">
-                        </label>
-                    </div>
-
-                    <div class="p-6">
-                        <!-- Invoice Grid List -->
-                        <div id="invoice-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            <!-- Invoices will render here -->
-                        </div>
-
-                        <!-- Empty state -->
-                        <div id="invoice-empty" class="hidden text-center py-12 text-slate-400">
-                            <i class="fa-solid fa-receipt text-4xl mb-3 block text-slate-300"></i>
-                            <p class="font-medium">Chưa có hóa đơn nào được tải lên</p>
-                            <p class="text-xs text-slate-400 mt-1">Sử dụng nút tải lên phía trên để lưu trữ hóa đơn của bạn</p>
+                        <div class="p-6">
+                            <div id="invoice-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+                            <div id="invoice-empty" class="hidden text-center py-12 text-slate-400">Không có hóa đơn</div>
                         </div>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- Right Panel: Input Form & Premium Chart with Legend -->
-            <div class="space-y-6">
-                
-                <!-- Dynamic Add / Edit Product Form -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 id="form-title" class="font-bold text-slate-800 text-base mb-4 flex items-center">
-                        <i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500 text-lg"></i> Thêm Sản Phẩm Mới
-                    </h3>
-                    
-                    <form id="add-item-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Tên Sản Phẩm *</label>
-                            <input type="text" id="form-name" required placeholder="Ví dụ: Gạo ngon, Tiền internet hằng tháng..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Loại Sản Phẩm *</label>
-                            <select id="form-category" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-700">
-                                <option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option>
-                                <option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option>
-                                <option value="Đồ dùng gia đình">Đồ dùng gia đình</option>
-                                <option value="Y tế & Sức khỏe">Y tế & Sức khỏe</option>
-                                <option value="Điện, Nước & Internet">Điện, Nước & Internet</option>
-                                <option value="Khác">Khác</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Giá Tiền (VND) *</label>
-                            <input type="number" id="form-price" required placeholder="Nhập số tiền..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 mb-1">Ngày Mua *</label>
-                                <input type="date" id="form-buy-date" required class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-600">
+                <!-- Cột Phải Form và Biểu đồ -->
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 id="form-title" class="font-bold text-slate-800 text-base mb-4 flex items-center"><i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới</h3>
+                        <form id="add-item-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tên Sản Phẩm *</label><input type="text" id="form-name" required class="w-full border rounded-xl px-3 py-2"></div>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Loại Sản Phẩm *</label><select id="form-category" required class="w-full border rounded-xl px-3 py-2 bg-white"><option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option><option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option><option value="Đồ dùng gia đình">Đồ dùng gia đình</option><option value="Y tế & Sức khỏe">Y tế & Sức khỏe</option><option value="Điện, Nước & Internet">Điện, Nước & Internet</option><option value="Khác">Khác</option></select></div>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Giá Tiền (VND) *</label><input type="number" id="form-price" required class="w-full border rounded-xl px-3 py-2"></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ngày Mua *</label><input type="date" id="form-buy-date" required class="w-full border rounded-xl px-3 py-2 text-slate-600"></div>
+                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Dự Kiến Hết</label><input type="date" id="form-expire-date" class="w-full border rounded-xl px-3 py-2 text-slate-600"></div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 mb-1">Dự Kiến Hết / Hạn Hợp Đồng</label>
-                                <input type="date" id="form-expire-date" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-600">
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ghi Chú</label><input type="text" id="form-notes" class="w-full border rounded-xl px-3 py-2"></div>
+                            <div class="flex gap-2">
+                                <button id="btn-cancel-edit" type="button" onclick="resetFormState()" class="hidden flex-1 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl">Hủy</button>
+                                <button type="submit" id="btn-submit" class="flex-[2] bg-blue-600 text-white font-bold py-2 rounded-xl">Lưu</button>
                             </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Ghi Chú</label>
-                            <input type="text" id="form-notes" placeholder="Nơi mua, chu kỳ dùng..." class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
-                        
-                        <!-- Form Actions -->
-                        <div class="flex gap-2 pt-2">
-                            <button id="btn-cancel-edit" type="button" onclick="resetFormState()" class="hidden flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-4 rounded-xl text-sm transition">
-                                Hủy bỏ
-                            </button>
-                            <button type="submit" id="btn-submit" class="flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow-sm">
-                                <i class="fa-solid fa-floppy-disk mr-1"></i> Lưu Vào Bảng Tính
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                        </form>
+                    </div>
 
-                <!-- Category Spending Chart Card with Side Legend -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center">
-                        <i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i> Cơ Cấu Chi Tiêu Thực Tế
-                    </h3>
-                    
-                    <!-- Diagram Container -->
-                    <div class="flex flex-col items-center">
-                        <div class="w-44 h-44 relative mb-4">
-                            <canvas id="categoryChart"></canvas>
-                        </div>
-                        
-                        <!-- Premium Interactive Legend List -->
-                        <div id="chart-legend" class="w-full space-y-2.5 pt-3 border-t border-slate-100">
-                            <!-- Populated Dynamically -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center"><i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i> Cơ Cấu Chi Tiêu Thực Tế</h3>
+                        <div class="flex flex-col items-center">
+                            <div class="w-44 h-44 relative mb-4"><canvas id="categoryChart"></canvas></div>
+                            <div id="chart-legend" class="w-full space-y-2.5 pt-3 border-t"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Modal: Google Drive Upload Instruction -->
-    <div id="drive-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 transition-all">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 relative">
-            <button onclick="closeDriveModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <div class="flex items-center space-x-3 text-blue-900 mb-4">
-                <i class="fa-brands fa-google-drive text-3xl text-amber-500 animate-pulse"></i>
-                <h3 class="text-lg font-bold">Cách Đưa Bảng Tính Lên Google Drive</h3>
-            </div>
-            <div class="space-y-4 text-sm text-slate-600">
-                <p>Thực hiện các bước cực kỳ đơn giản sau đây để biến tệp này thành một trang tính Google Sheets trực tiếp của bạn:</p>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-blue-100 text-blue-800 font-bold rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">1</div>
-                    <p>Nhấp vào nút <strong class="text-emerald-700">"Xuất Excel / CSV"</strong> ở góc trên bên phải màn hình để tải dữ liệu hiện có về máy tính dưới định dạng tệp <code class="bg-slate-100 px-1 py-0.5 rounded text-rose-600 font-mono">.csv</code>.</p>
-                </div>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-blue-100 text-blue-800 font-bold rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">2</div>
-                    <p>Truy cập vào <a href="https://drive.google.com" target="_blank" class="text-blue-600 underline font-semibold hover:text-blue-800">drive.google.com <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-0.5"></i></a>.</p>
-                </div>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-blue-100 text-blue-800 font-bold rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">3</div>
-                    <p>Kéo và thả tệp vừa tải về trực tiếp vào cửa sổ Google Drive của bạn.</p>
-                </div>
-                <div class="flex items-start space-x-3">
-                    <div class="bg-blue-100 text-blue-800 font-bold rounded-full h-6 w-6 flex items-center justify-center shrink-0 mt-0.5">4</div>
-                    <p>Click đúp vào tệp vừa tải lên Drive, sau đó bấm chọn <strong>"Mở bằng Google Trang tính"</strong> (Open with Google Sheets). Hệ thống sẽ tự động chuyển đổi thành Google Sheets chính chủ!</p>
-                </div>
-            </div>
-            <div class="mt-6 flex justify-end">
-                <button onclick="closeDriveModal()" class="bg-blue-900 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-800 transition">Tôi đã hiểu</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Dialog Modal (Beautiful replacements for alert/confirm) -->
+    <!-- Modals Thông Báo -->
     <div id="custom-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center">
-            <div id="dialog-icon" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4">
-                <!-- Set by Javascript -->
-            </div>
-            <h4 id="dialog-title" class="text-lg font-bold text-slate-800 mb-2">Tiêu đề</h4>
-            <p id="dialog-message" class="text-sm text-slate-500 mb-6">Nội dung thông báo chi tiết tại đây.</p>
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <div id="dialog-icon" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"></div>
+            <h4 id="dialog-title" class="text-lg font-bold mb-2"></h4>
+            <p id="dialog-message" class="text-sm text-slate-500 mb-6"></p>
             <div class="flex justify-center space-x-2">
-                <button id="dialog-btn-cancel" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-sm transition min-w-[80px]">Hủy bỏ</button>
-                <button id="dialog-btn-confirm" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition min-w-[80px]">Đồng ý</button>
+                <button id="dialog-btn-cancel" class="bg-slate-100 px-4 py-2 rounded-xl text-sm font-bold">Hủy bỏ</button>
+                <button id="dialog-btn-confirm" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Đồng ý</button>
             </div>
         </div>
     </div>
 
-    <!-- Image Lightbox Modal for Invoice Preview -->
+    <!-- MODAL LIGHTBOX XEM HÓA ĐƠN -->
     <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
-        <button class="absolute top-4 right-4 text-white hover:text-slate-300 text-2xl bg-black/40 p-2.5 rounded-full transition">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="max-w-3xl max-h-[85vh] w-full flex items-center justify-center p-2" onclick="event.stopPropagation()">
-            <img id="lightbox-img" src="" alt="Hóa đơn phóng to" class="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain border border-slate-800">
-        </div>
-        <div class="mt-4 text-center">
-            <p id="lightbox-title" class="text-white font-bold text-lg">Tên hóa đơn</p>
-            <p id="lightbox-date" class="text-slate-400 text-sm mt-0.5">Ngày tải lên</p>
-        </div>
+        <img id="lightbox-img" src="" class="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain">
     </div>
 
-    <!-- JS Logic -->
-    <script>
-        // Default Sample Data
-        const defaultData = [
-            { id: 1, name: "Gạo Tám Thơm 10kg", category: "Thực phẩm & Ăn uống", price: 220000, buyDate: "2026-07-01", expireDate: "2026-07-31", notes: "Mua tại siêu thị gần nhà" },
-            { id: 2, name: "Nước giặt Ariel 3.5L", category: "Hóa mỹ phẩm & Vệ sinh", price: 195000, buyDate: "2026-07-02", expireDate: "2026-09-02", notes: "Thời gian sử dụng thực tế khoảng 2 tháng" },
-            { id: 3, name: "Kem đánh răng Colgate", category: "Hóa mỹ phẩm & Vệ sinh", price: 45000, buyDate: "2026-07-02", expireDate: "2026-07-04", notes: "Mẫu hết hạn để test tính năng cảnh báo" },
-            { id: 4, name: "Bóng đèn LED phòng khách", category: "Đồ dùng gia đình", price: 65000, buyDate: "2026-07-04", expireDate: "2026-07-08", notes: "Cần thay bóng cũ bị hỏng" },
-            { id: 5, name: "Tiền điện tháng 6", category: "Điện, Nước & Internet", price: 1250000, buyDate: "2026-07-05", expireDate: "2026-07-05", notes: "Đóng tiền trực tuyến qua Momo" }
-        ];
+    <!-- TÍCH HỢP SDK FIREBASE (ĐÃ NHÚNG CONFIG THẬT CỦA BẠN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Centralized Category Colors System (Synced completely across Table, Legends & Charts)
+        // Cấu hình Firebase thực tế của bạn
+        const firebaseConfig = {
+            apiKey: "AIzaSyC23lf_nrvW_fU8jhBvi9uDS__VeC5eV14",
+            authDomain: "metom-finance.firebaseapp.com",
+            projectId: "metom-finance",
+            storageBucket: "metom-finance.firebasestorage.app",
+            messagingSenderId: "534084964262",
+            appId: "1:534084964262:web:4bd70811a2d2a8dec18967"
+        };
+
+        // Khởi tạo các dịch vụ Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Biến toàn cục quản lý trạng thái local ứng dụng
+        let currentUserId = null;
+        let isSignUpMode = false;
+        let database = [];
+        let invoices = [];
+        let chartInstance = null;
+        let editingId = null;
+
         const categoryMap = {
             "Thực phẩm & Ăn uống": { color: '#3b82f6', bgClass: 'bg-blue-50', textClass: 'text-blue-700', borderClass: 'border-blue-200' },
             "Hóa mỹ phẩm & Vệ sinh": { color: '#10b981', bgClass: 'bg-emerald-50', textClass: 'text-emerald-700', borderClass: 'border-emerald-200' },
@@ -370,220 +275,80 @@
             "Điện, Nước & Internet": { color: '#8b5cf6', bgClass: 'bg-purple-50', textClass: 'text-purple-700', borderClass: 'border-purple-200' },
             "Khác": { color: '#94a3b8', bgClass: 'bg-slate-100', textClass: 'text-slate-700', borderClass: 'border-slate-200' }
         };
-
         const categoryOrder = ["Thực phẩm & Ăn uống", "Hóa mỹ phẩm & Vệ sinh", "Đồ dùng gia đình", "Y tế & Sức khỏe", "Điện, Nước & Internet", "Khác"];
 
-        // Global states
-        let database = JSON.parse(localStorage.getItem('budget_db')) || [...defaultData];
-        let invoices = JSON.parse(localStorage.getItem('invoice_db')) || [];
-        let chartInstance = null;
-        let editingId = null; // Track if we are editing an item
+        // HỆ THỐNG XỬ LÝ TÀI KHOẢN
+        window.toggleAuthMode = function() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-title').textContent = isSignUpMode ? "Đăng Ký Tài Khoản MeTom" : "Đăng Nhập Vào MeTom";
+            document.getElementById('btn-auth-submit').innerHTML = isSignUpMode ? `<i class="fa-solid fa-user-plus mr-1"></i> Đăng Ký` : `<i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập`;
+            document.getElementById('auth-switch-text').textContent = isSignUpMode ? "Đã có tài khoản?" : "Chưa có tài khoản?";
+            document.getElementById('btn-auth-switch').textContent = isSignUpMode ? "Đăng nhập ngay" : "Đăng ký ngay";
+        };
 
-        // UI Initialization
-        document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
-
-        // Format Currency Helper
-        function formatVND(amount) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-        }
-
-        // Helper to check expiry status
-        function checkExpiryStatus(expireDateStr) {
-            if (!expireDateStr) return 'normal';
-            
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            const expDate = new Date(expireDateStr);
-            expDate.setHours(0,0,0,0);
-
-            const diffTime = expDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays <= 0) {
-                return 'expired'; // Red Color
-            } else if (diffDays <= 3) {
-                return 'expiring-soon'; // Yellow Color
-            }
-            return 'normal';
-        }
-
-        // Custom Modal Alert / Confirm System
-        function showCustomConfirm({ title, message, isAlert = false, type = 'warning', onConfirm, onCancel }) {
-            const modal = document.getElementById('custom-modal');
-            const titleEl = document.getElementById('dialog-title');
-            const msgEl = document.getElementById('dialog-message');
-            const iconContainer = document.getElementById('dialog-icon');
-            const btnCancel = document.getElementById('dialog-btn-cancel');
-            const btnConfirm = document.getElementById('dialog-btn-confirm');
-
-            titleEl.textContent = title;
-            msgEl.textContent = message;
-
-            // Handle type-based color and icons
-            if (type === 'danger') {
-                iconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-rose-100 text-rose-600";
-                iconContainer.innerHTML = `<i class="fa-solid fa-circle-exclamation text-xl"></i>`;
-                btnConfirm.className = "bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition min-w-[80px]";
-            } else if (type === 'success') {
-                iconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-emerald-100 text-emerald-600";
-                iconContainer.innerHTML = `<i class="fa-solid fa-circle-check text-xl"></i>`;
-                btnConfirm.className = "bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition min-w-[80px]";
-            } else {
-                iconContainer.className = "mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 bg-amber-100 text-amber-600";
-                iconContainer.innerHTML = `<i class="fa-solid fa-circle-question text-xl"></i>`;
-                btnConfirm.className = "bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition min-w-[80px]";
-            }
-
-            if (isAlert) {
-                btnCancel.classList.add('hidden');
-            } else {
-                btnCancel.classList.remove('hidden');
-            }
-
-            // Click Handlers
-            btnConfirm.onclick = () => {
-                modal.classList.add('hidden');
-                if (onConfirm) onConfirm();
-            };
-            btnCancel.onclick = () => {
-                modal.classList.add('hidden');
-                if (onCancel) onCancel();
-            };
-
-            modal.classList.remove('hidden');
-        }
-
-        // Switch workspace tabs
-        function switchTab(tabName) {
-            const btnTable = document.getElementById('btn-tab-table');
-            const btnVault = document.getElementById('btn-tab-vault');
-            const contentTable = document.getElementById('tab-table-content');
-            const contentVault = document.getElementById('tab-vault-content');
-
-            if (tabName === 'table') {
-                btnTable.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white";
-                btnVault.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
-                contentTable.classList.remove('hidden');
-                contentVault.classList.add('hidden');
-            } else {
-                btnVault.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white";
-                btnTable.className = "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
-                contentTable.classList.add('hidden');
-                contentVault.classList.remove('hidden');
-                renderInvoices();
-            }
-        }
-
-        // Render table records, group them by category and count up totals
-        function renderTable() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = '';
-
-            const categoryFilter = document.getElementById('filter-category').value;
-            let totalSpend = 0;
-            let expiredCount = 0;
-            let expiringCount = 0;
-            let filteredCount = 0;
-
-            // 1. Auto-sorting: Group by predefined category order first, then sort by purchase date descending within categories
-            const sortedDatabase = [...database].sort((a, b) => {
-                const indexA = categoryOrder.indexOf(a.category);
-                const indexB = categoryOrder.indexOf(b.category);
-                if (indexA !== indexB) {
-                    return indexA - indexB;
-                }
-                // Secondary sort: newest buy date first
-                return new Date(b.buyDate) - new Date(a.buyDate);
-            });
-
-            // 2. Loop through sorted data
-            sortedDatabase.forEach((item) => {
-                if (categoryFilter !== 'all' && item.category !== categoryFilter) return;
-
-                filteredCount++;
-                totalSpend += parseFloat(item.price);
-
-                const expiryStatus = checkExpiryStatus(item.expireDate);
-                const categoryStyle = categoryMap[item.category] || categoryMap["Khác"];
-                
-                let rowBgClass = 'hover:bg-slate-50/60';
-                let badgeClass = '';
-                let statusText = '';
-
-                if (expiryStatus === 'expired') {
-                    expiredCount++;
-                    rowBgClass = 'bg-rose-50/40 hover:bg-rose-100/40 text-rose-950';
-                    badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
-                    statusText = 'Quá hạn / Cần đóng';
-                } else if (expiryStatus === 'expiring-soon') {
-                    expiringCount++;
-                    rowBgClass = 'bg-amber-50/40 hover:bg-amber-100/40 text-amber-950';
-                    badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
-                    statusText = 'Sắp hết hạn';
-                }
-
-                tbody.innerHTML += `
-                    <tr class="${rowBgClass} transition duration-150 border-l-4" style="border-left-color: ${categoryStyle.color}">
-                        <td class="px-4 py-4 text-center text-slate-400 font-semibold">${filteredCount}</td>
-                        <td class="px-4 py-4">
-                            <div class="font-bold text-slate-800">${item.name}</div>
-                            ${item.notes ? `<div class="text-xs text-slate-400 font-normal mt-0.5">${item.notes}</div>` : ''}
-                        </td>
-                        <td class="px-4 py-4">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg ${categoryStyle.bgClass} ${categoryStyle.textClass} border ${categoryStyle.borderClass}">
-                                <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${categoryStyle.color}"></span>
-                                ${item.category}
-                            </span>
-                        </td>
-                        <td class="px-4 py-4 text-right font-extrabold text-slate-900">${formatVND(item.price)}</td>
-                        <td class="px-4 py-4 text-center">
-                            <div class="text-xs font-semibold text-slate-700">M: <span class="font-normal text-slate-400">${item.buyDate}</span></div>
-                            ${item.expireDate ? `
-                                <div class="text-xs font-semibold text-slate-700 mt-0.5">H: <span class="font-normal text-slate-400">${item.expireDate}</span></div>
-                                ${statusText ? `<span class="inline-block text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded border ${badgeClass} mt-1">${statusText}</span>` : ''}
-                            ` : '<div class="text-xs text-slate-300 mt-0.5 italic">Không thời hạn</div>'}
-                        </td>
-                        <td class="px-4 py-4 text-center">
-                            <div class="flex items-center justify-center space-x-1.5">
-                                <button onclick="startEditItem(${item.id})" class="text-slate-500 hover:text-blue-700 hover:bg-blue-50 p-1.5 rounded-lg transition" title="Chỉnh sửa">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button onclick="promptDeleteItem(${item.id})" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition" title="Xóa">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            if (filteredCount === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center py-12 text-slate-400">
-                            <i class="fa-solid fa-folder-open text-4xl mb-3 block text-slate-200"></i> 
-                            <p class="font-semibold text-slate-400">Chưa tìm thấy mục phù hợp</p>
-                            <p class="text-xs text-slate-400 mt-1">Hãy bắt đầu thêm sản phẩm của bạn bằng form bên cạnh</p>
-                        </td>
-                    </tr>
-                `;
-            }
-
-            // Cards value updates
-            document.getElementById('total-spend').textContent = formatVND(totalSpend);
-            document.getElementById('total-items').textContent = `${database.length} SP`;
-            document.getElementById('expired-count').textContent = `${expiredCount} SP`;
-            document.getElementById('expiring-count').textContent = `${expiringCount} SP`;
-
-            updateChart();
-            updateInvoiceCountBadge();
-        }
-
-        // Form Submit Router (Create or Update)
-        function handleFormSubmit(event) {
+        window.handleAuthSubmit = async function(event) {
             event.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
 
+            try {
+                if (isSignUpMode) {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    alert("Đăng ký tài khoản thành công!");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                alert("Lỗi xác thực: " + error.message);
+            }
+        };
+
+        window.handleLogout = async function() {
+            await signOut(auth);
+            location.reload();
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-display-email').textContent = `Tài khoản: ${user.email}`;
+                await loadUserData();
+            } else {
+                currentUserId = null;
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        // TẢI DỮ LIỆU ĐÃ LỌC CHÍNH XÁC THEO USER ID
+        async function loadUserData() {
+            try {
+                const qSpend = query(collection(db, "budgets"), where("userId", "==", currentUserId));
+                const querySnapshot = await getDocs(qSpend);
+                database = [];
+                querySnapshot.forEach((doc) => {
+                    database.push({ docId: doc.id, ...doc.data() });
+                });
+
+                const qInvoice = query(collection(db, "invoices"), where("userId", "==", currentUserId));
+                const invoiceSnapshot = await getDocs(qInvoice);
+                invoices = [];
+                invoiceSnapshot.forEach((doc) => {
+                    invoices.push({ docId: doc.id, ...doc.data() });
+                });
+
+                renderTable();
+                renderInvoices();
+            } catch (err) {
+                console.error("Lỗi lấy dữ liệu đám mây: ", err);
+            }
+        }
+
+        // XỬ LÝ FORM THÊM / CẬP NHẬT CHI TIÊU
+        window.handleFormSubmit = async function(event) {
+            event.preventDefault();
             const name = document.getElementById('form-name').value.trim();
             const category = document.getElementById('form-category').value;
             const price = parseFloat(document.getElementById('form-price').value);
@@ -591,350 +356,217 @@
             const expireDate = document.getElementById('form-expire-date').value || null;
             const notes = document.getElementById('form-notes').value.trim();
 
+            const itemData = { userId: currentUserId, name, category, price, buyDate, expireDate, notes };
+
             if (editingId) {
-                // UPDATE EXISITING
-                database = database.map(item => {
-                    if (item.id === editingId) {
-                        return { ...item, name, category, price, buyDate, expireDate, notes };
-                    }
-                    return item;
-                });
-                
-                showCustomConfirm({
-                    title: "Thành công",
-                    message: "Thông tin chi tiêu đã được cập nhật thành công!",
-                    isAlert: true,
-                    type: "success"
-                });
+                const docRef = doc(db, "budgets", editingId);
+                await updateDoc(docRef, itemData);
                 resetFormState();
             } else {
-                // CREATE NEW
-                const newItem = {
-                    id: Date.now(),
-                    name,
-                    category,
-                    price,
-                    buyDate,
-                    expireDate,
-                    notes
-                };
-                database.push(newItem);
-                
-                showCustomConfirm({
-                    title: "Đã thêm",
-                    message: `Sản phẩm "${name}" đã được đưa vào bảng tính thành công.`,
-                    isAlert: true,
-                    type: "success"
-                });
+                await addDoc(collection(db, "budgets"), itemData);
             }
 
-            localStorage.setItem('budget_db', JSON.stringify(database));
             document.getElementById('add-item-form').reset();
             document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
-            renderTable();
+            await loadUserData();
+        };
+
+        // XÓA MỤC CHI TIÊU
+        window.promptDeleteItem = function(docId) {
+            showCustomConfirm({
+                title: "Xóa sản phẩm này?",
+                message: "Bạn có thật sự chắc chắn muốn loại bỏ mặt hàng này khỏi tài khoản?",
+                type: "danger",
+                onConfirm: async () => {
+                    await deleteDoc(doc(db, "budgets", docId));
+                    await loadUserData();
+                }
+            });
+        };
+
+        // TẢI HÓA ĐƠN LÊN ĐÁM MÂY
+        window.handleInvoiceUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                const newInvoice = {
+                    userId: currentUserId,
+                    name: file.name.substring(0, file.name.lastIndexOf('.')) || file.name,
+                    date: new Date().toLocaleDateString('vi-VN'),
+                    image: base64Image
+                };
+
+                await addDoc(collection(db, "invoices"), newInvoice);
+                event.target.value = '';
+                await loadUserData();
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // XÓA HÓA ĐƠN
+        window.promptDeleteInvoice = function(docId) {
+            showCustomConfirm({
+                title: "Xóa hóa đơn?",
+                message: "Biên lai này sẽ bị xóa vĩnh viễn khỏi tài khoản của bạn.",
+                type: "danger",
+                onConfirm: async () => {
+                    await deleteDoc(doc(db, "invoices", docId));
+                    await loadUserData();
+                }
+            });
+        };
+
+        // LOGIC RENDER GIAO DIỆN KHÁC
+        window.formatVND = function(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        };
+
+        function checkExpiryStatus(expireDateStr) {
+            if (!expireDateStr) return 'normal';
+            const today = new Date(); today.setHours(0,0,0,0);
+            const expDate = new Date(expireDateStr); expDate.setHours(0,0,0,0);
+            const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) return 'expired';
+            if (diffDays <= 3) return 'expiring-soon';
+            return 'normal';
         }
 
-        // Start editing item - load details to form
-        function startEditItem(id) {
-            const item = database.find(x => x.id === id);
-            if (!item) return;
+        window.switchTab = function(tabName) {
+            const btnTable = document.getElementById('btn-tab-table');
+            const btnVault = document.getElementById('btn-tab-vault');
+            document.getElementById('tab-table-content').classList.toggle('hidden', tabName !== 'table');
+            document.getElementById('tab-vault-content').classList.toggle('hidden', tabName !== 'vault');
+            btnTable.className = tabName === 'table' ? "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white" : "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
+            btnVault.className = tabName === 'vault' ? "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white" : "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
+        };
 
-            editingId = id;
-            document.getElementById('form-title').innerHTML = `<i id="form-icon" class="fa-solid fa-pen-to-square mr-2 text-blue-500 text-lg"></i> Chỉnh Sửa Chi Tiêu`;
+        window.renderTable = function() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            const categoryFilter = document.getElementById('filter-category').value;
+            let totalSpend = 0, expiredCount = 0, expiringCount = 0, filteredCount = 0;
+
+            const sortedDatabase = [...database].sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
+
+            sortedDatabase.forEach((item) => {
+                if (categoryFilter !== 'all' && item.category !== categoryFilter) return;
+                filteredCount++;
+                totalSpend += parseFloat(item.price);
+                const expiryStatus = checkExpiryStatus(item.expireDate);
+                const categoryStyle = categoryMap[item.category] || categoryMap["Khác"];
+                let rowBgClass = 'hover:bg-slate-50/60', badgeClass = '', statusText = '';
+
+                if (expiryStatus === 'expired') { expiredCount++; rowBgClass = 'bg-rose-50/40 text-rose-950'; badgeClass = 'bg-rose-100 text-rose-800 border-rose-200'; statusText = 'Quá hạn / Cần đóng'; }
+                else if (expiryStatus === 'expiring-soon') { expiringCount++; rowBgClass = 'bg-amber-50/40 text-amber-950'; badgeClass = 'bg-amber-100 text-amber-800 border-amber-200'; statusText = 'Sắp hết hạn'; }
+
+                tbody.innerHTML += `
+                    <tr class="${rowBgClass} transition border-l-4" style="border-left-color: ${categoryStyle.color}">
+                        <td class="px-4 py-4 text-center text-slate-400 font-semibold">${filteredCount}</td>
+                        <td class="px-4 py-4"><div class="font-bold text-slate-800">${item.name}</div>${item.notes ? `<div class="text-xs text-slate-400 mt-0.5">${item.notes}</div>` : ''}</td>
+                        <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg ${categoryStyle.bgClass} ${categoryStyle.textClass} border ${categoryStyle.borderClass}">${item.category}</span></td>
+                        <td class="px-4 py-4 text-right font-extrabold text-slate-900">${formatVND(item.price)}</td>
+                        <td class="px-4 py-4 text-center"><div class="text-xs font-semibold">M: <span class="font-normal text-slate-400">${item.buyDate}</span></div>${item.expireDate ? `<div class="text-xs font-semibold mt-0.5">H: <span class="font-normal text-slate-400">${item.expireDate}</span></div>${statusText ? `<span class="inline-block text-[9px] font-extrabold border ${badgeClass} mt-1">${statusText}</span>` : ''}` : ''}</td>
+                        <td class="px-4 py-4 text-center"><div class="flex justify-center space-x-1"><button onclick="startEditItem('${item.docId}')" class="text-slate-500 hover:text-blue-700 p-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="promptDeleteItem('${item.docId}')" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-trash-can"></i></button></div></td>
+                    </tr>`;
+            });
+
+            document.getElementById('total-spend').textContent = formatVND(totalSpend);
+            document.getElementById('total-items').textContent = `${database.length} SP`;
+            document.getElementById('expired-count').textContent = `${expiredCount} SP`;
+            document.getElementById('expiring-count').textContent = `${expiringCount} SP`;
+            updateChart();
+            document.getElementById('invoice-count-badge').textContent = invoices.length;
+        };
+
+        window.startEditItem = function(docId) {
+            const item = database.find(x => x.docId === docId);
+            if (!item) return;
+            editingId = docId;
+            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-pen-to-square mr-2 text-blue-500"></i> Chỉnh Sửa`;
             document.getElementById('form-name').value = item.name;
             document.getElementById('form-category').value = item.category;
             document.getElementById('form-price').value = item.price;
             document.getElementById('form-buy-date').value = item.buyDate;
             document.getElementById('form-expire-date').value = item.expireDate || '';
             document.getElementById('form-notes').value = item.notes || '';
-
             document.getElementById('btn-cancel-edit').classList.remove('hidden');
-            document.getElementById('btn-submit').innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> Cập Nhật Mục Này`;
-            document.getElementById('btn-submit').className = "flex-[2] bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow-sm";
+        };
 
-            // Scroll form into view for mobile devices
-            document.getElementById('add-item-form').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Cancel edit state
-        function resetFormState() {
+        window.resetFormState = function() {
             editingId = null;
-            document.getElementById('form-title').innerHTML = `<i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500 text-lg"></i> Thêm Sản Phẩm Mới`;
+            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới`;
             document.getElementById('add-item-form').reset();
             document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('btn-cancel-edit').classList.add('hidden');
-            document.getElementById('btn-submit').innerHTML = `<i class="fa-solid fa-floppy-disk mr-1"></i> Lưu Vào Bảng Tính`;
-            document.getElementById('btn-submit').className = "flex-[2] bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition shadow-sm";
-        }
+        };
 
-        // Delete Item Trigger Modal
-        function promptDeleteItem(id) {
-            const item = database.find(x => x.id === id);
-            showCustomConfirm({
-                title: "Xóa sản phẩm này?",
-                message: `Bạn có thật sự chắc chắn muốn loại bỏ mặt hàng "${item?.name}" khỏi trang tính không?`,
-                type: "danger",
-                onConfirm: () => {
-                    database = database.filter(x => x.id !== id);
-                    localStorage.setItem('budget_db', JSON.stringify(database));
-                    renderTable();
-                }
+        window.renderInvoices = function() {
+            const grid = document.getElementById('invoice-grid');
+            grid.innerHTML = '';
+            document.getElementById('invoice-empty').classList.toggle('hidden', invoices.length > 0);
+            invoices.forEach(invoice => {
+                grid.innerHTML += `
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col group relative">
+                        <div class="overflow-hidden rounded-lg bg-slate-200 h-36 flex items-center justify-center cursor-pointer" onclick="openLightbox('${invoice.docId}')">
+                            <img src="${invoice.image}" class="object-cover w-full h-full">
+                        </div>
+                        <div class="mt-3 flex justify-between gap-2">
+                            <div class="truncate"><h4 class="font-bold text-xs truncate">${invoice.name}</h4><p class="text-[10px] text-slate-400">${invoice.date}</p></div>
+                            <button onclick="promptDeleteInvoice('${invoice.docId}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>`;
             });
-        }
+        };
 
-        // Revert data to default preset trigger
-        function promptResetData() {
-            showCustomConfirm({
-                title: "Đặt lại dữ liệu gốc?",
-                message: "Toàn bộ chi tiêu hiện có sẽ bị xóa và tải lại tệp dữ liệu mẫu ban đầu. Bạn có đồng ý?",
-                type: "danger",
-                onConfirm: () => {
-                    localStorage.removeItem('budget_db');
-                    database = [...defaultData];
-                    resetFormState();
-                    renderTable();
-                }
-            });
-        }
+        window.openLightbox = function(docId) {
+            const invoice = invoices.find(x => x.docId === docId);
+            if (invoice) { document.getElementById('lightbox-img').src = invoice.image; document.getElementById('lightbox-modal').classList.remove('hidden'); }
+        };
+        window.closeLightbox = function() { document.getElementById('lightbox-modal').classList.add('hidden'); };
 
-        // Export data to standard CSV
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // Vietnamese character encoding
-            csvContent += "STT,Tên sản phẩm,Loại sản phẩm,Giá tiền (VND),Ngày mua,Ngày hết hạn,Ghi chú\r\n";
-
-            // Maintain the sorted view when exporting
-            const sortedDatabase = [...database].sort((a, b) => {
-                const indexA = categoryOrder.indexOf(a.category);
-                const indexB = categoryOrder.indexOf(b.category);
-                if (indexA !== indexB) return indexA - indexB;
-                return new Date(b.buyDate) - new Date(a.buyDate);
-            });
-
-            sortedDatabase.forEach((item, index) => {
-                let row = [
-                    index + 1,
-                    `"${item.name.replace(/"/g, '""')}"`,
-                    `"${item.category}"`,
-                    item.price,
-                    item.buyDate,
-                    item.expireDate || "",
-                    `"${item.notes ? item.notes.replace(/"/g, '""') : ""}"`
-                ];
-                csvContent += row.join(",") + "\r\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Danh_Sach_Chi_Tieu_Sinh_Hoat.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Google Drive Informative Modals
-        function openDriveModal() {
-            document.getElementById('drive-modal').classList.remove('hidden');
-        }
-
-        function closeDriveModal() {
-            document.getElementById('drive-modal').classList.add('hidden');
-        }
-
-        /* --- Chart.js Configuration & Premium Dynamic Legend --- */
         function updateChart() {
-            // Get colors sequentially mapped from categoryMap
             const colors = categoryOrder.map(cat => categoryMap[cat].color);
-            
-            // Calculate sum for each category
-            const categorySums = categoryOrder.map(cat => {
-                return database
-                    .filter(item => item.category === cat)
-                    .reduce((sum, item) => sum + parseFloat(item.price), 0);
-            });
-
+            const categorySums = categoryOrder.map(cat => database.filter(item => item.category === cat).reduce((sum, item) => sum + parseFloat(item.price), 0));
             const totalSpending = categorySums.reduce((a, b) => a + b, 0);
-            
-            // Render Custom HTML Legend List next to Chart
             const legendContainer = document.getElementById('chart-legend');
             legendContainer.innerHTML = '';
 
             categoryOrder.forEach((cat, idx) => {
                 const amount = categorySums[idx];
                 const percentage = totalSpending > 0 ? ((amount / totalSpending) * 100).toFixed(1) : '0.0';
-                
                 legendContainer.innerHTML += `
-                    <div class="flex items-center justify-between text-xs hover:bg-slate-50 p-1.5 rounded-lg transition duration-150">
-                        <div class="flex items-center space-x-2.5 truncate max-w-[65%]">
-                            <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colors[idx]}"></span>
-                            <span class="font-semibold text-slate-700 truncate">${cat}</span>
-                        </div>
-                        <div class="text-right flex items-center space-x-2 font-bold text-slate-900">
-                            <span>${formatVND(amount)}</span>
-                            <span class="text-slate-400 font-medium text-[10px] w-10 text-right">${percentage}%</span>
-                        </div>
-                    </div>
-                `;
+                    <div class="flex items-center justify-between text-xs p-1">
+                        <div class="flex items-center space-x-2 truncate"><span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${colors[idx]}"></span><span class="font-semibold text-slate-700 truncate">${cat}</span></div>
+                        <div class="font-bold text-slate-900"><span>${formatVND(amount)}</span> <span class="text-slate-400 text-[10px] ml-1">${percentage}%</span></div>
+                    </div>`;
             });
 
-            const displayData = totalSpending > 0 ? categorySums : categoryOrder.map(() => 1);
             const ctx = document.getElementById('categoryChart').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: categoryOrder, datasets: [{ data: totalSpending > 0 ? categorySums : categoryOrder.map(() => 1), backgroundColor: colors, borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '72%' } });
+        }
 
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: categoryOrder,
-                    datasets: [{
-                        data: displayData,
-                        backgroundColor: colors,
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false // Using our custom premium Legend above
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const val = totalSpending > 0 ? categorySums[context.dataIndex] : 0;
-                                    return ` ${context.label}: ${formatVND(val)}`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '72%'
-                }
+        window.exportToCSV = function() {
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFFSTT,Tên sản phẩm,Loại sản phẩm,Giá tiền (VND),Ngày mua,Ngày hết hạn,Ghi chú\r\n";
+            database.forEach((item, index) => {
+                csvContent += [index + 1, `"${item.name}"`, `"${item.category}"`, item.price, item.buyDate, item.expireDate || "", `"${item.notes || ""}"`].join(",") + "\r\n";
             });
-        }
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", "MeTom_Chi_Tieu.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        };
 
-        /* --- Invoice Vault (Kho Lưu Trữ Hóa Đơn) Logic --- */
-        
-        function updateInvoiceCountBadge() {
-            document.getElementById('invoice-count-badge').textContent = invoices.length;
-        }
-
-        function handleInvoiceUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Check if file is image
-            if (!file.type.startsWith('image/')) {
-                showCustomConfirm({
-                    title: "Lỗi định dạng",
-                    message: "Vui lòng chỉ tải lên định dạng file ảnh (PNG, JPG, JPEG).",
-                    isAlert: true,
-                    type: "danger"
-                });
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                const newInvoice = {
-                    id: Date.now(),
-                    name: file.name.substring(0, file.name.lastIndexOf('.')) || file.name,
-                    date: new Date().toLocaleDateString('vi-VN'),
-                    image: base64Image
-                };
-
-                invoices.unshift(newInvoice);
-                localStorage.setItem('invoice_db', JSON.stringify(invoices));
-                renderInvoices();
-                updateInvoiceCountBadge();
-                
-                showCustomConfirm({
-                    title: "Thành công",
-                    message: "Hóa đơn của bạn đã được lưu trữ thành công vào Kho lưu hóa đơn.",
-                    isAlert: true,
-                    type: "success"
-                });
-            };
-            reader.readAsDataURL(file);
-            
-            // Reset input file value to allow uploading same file
-            event.target.value = '';
-        }
-
-        function renderInvoices() {
-            const grid = document.getElementById('invoice-grid');
-            const emptyState = document.getElementById('invoice-empty');
-            grid.innerHTML = '';
-
-            if (invoices.length === 0) {
-                emptyState.classList.remove('hidden');
-                grid.classList.add('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            grid.classList.remove('hidden');
-
-            invoices.forEach(invoice => {
-                grid.innerHTML += `
-                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 flex flex-col justify-between group hover:shadow-md transition duration-150 relative">
-                        <div class="relative overflow-hidden rounded-lg bg-slate-200 h-36 flex items-center justify-center cursor-pointer" onclick="openLightbox(${invoice.id})">
-                            <img src="${invoice.image}" alt="${invoice.name}" class="object-cover w-full h-full transition duration-300 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-150">
-                                <span class="text-white text-xs font-bold bg-black/50 px-2.5 py-1.5 rounded-lg"><i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Xem chi tiết</span>
-                            </div>
-                        </div>
-                        <div class="mt-3 flex items-start justify-between gap-2">
-                            <div class="truncate">
-                                <h4 class="font-bold text-slate-800 text-xs truncate" title="${invoice.name}">${invoice.name}</h4>
-                                <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-regular fa-calendar-days mr-1"></i>${invoice.date}</p>
-                            </div>
-                            <button onclick="promptDeleteInvoice(${invoice.id})" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition shrink-0" title="Xóa hóa đơn">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function promptDeleteInvoice(id) {
-            const invoice = invoices.find(x => x.id === id);
-            showCustomConfirm({
-                title: "Xóa hóa đơn này?",
-                message: `Biên lai "${invoice?.name}" sẽ bị xóa vĩnh viễn khỏi trình duyệt. Hành động này không thể hoàn tác.`,
-                type: "danger",
-                onConfirm: () => {
-                    invoices = invoices.filter(x => x.id !== id);
-                    localStorage.setItem('invoice_db', JSON.stringify(invoices));
-                    renderInvoices();
-                    updateInvoiceCountBadge();
-                }
-            });
-        }
-
-        // Lightbox Zoom Modal handlers
-        function openLightbox(id) {
-            const invoice = invoices.find(x => x.id === id);
-            if (!invoice) return;
-
-            document.getElementById('lightbox-img').src = invoice.image;
-            document.getElementById('lightbox-title').textContent = invoice.name;
-            document.getElementById('lightbox-date').textContent = `Ngày tải lên: ${invoice.date}`;
-            document.getElementById('lightbox-modal').classList.remove('hidden');
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox-modal').classList.add('hidden');
-        }
-
-        // Run On Start
-        window.onload = function() {
-            renderTable();
+        window.showCustomConfirm = function({ title, message, isAlert = false, type = 'warning', onConfirm }) {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('dialog-title').textContent = title;
+            document.getElementById('dialog-message').textContent = message;
+            const btnCancel = document.getElementById('dialog-btn-cancel');
+            const btnConfirm = document.getElementById('dialog-btn-confirm');
+            btnCancel.classList.toggle('hidden', isAlert);
+            btnConfirm.onclick = () => { modal.classList.add('hidden'); if (onConfirm) onConfirm(); };
+            btnCancel.onclick = () => modal.classList.add('hidden');
+            modal.classList.remove('hidden');
         };
     </script>
 </body>
