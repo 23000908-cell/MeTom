@@ -11,29 +11,52 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Họa tiết con mèo in chìm nghệ thuật cho các khối giao diện */
+        .cat-watermark {
+            position: absolute;
+            right: -15px;
+            bottom: -20px;
+            opacity: 0.08;
+            pointer-events: none;
+            transform: rotate(15deg);
+            transition: all 0.3s ease;
+        }
+        .group:hover .cat-watermark {
+            transform: rotate(5deg) scale(1.1);
+            opacity: 0.12;
+        }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
     <!-- KHU VỰC ĐĂNG NHẬP / ĐĂNG KÝ -->
     <div id="auth-screen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl border border-slate-100">
-            <div class="text-center mb-6">
-                <div class="bg-blue-900 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-md mb-3 text-2xl font-bold">M</div>
-                <h3 id="auth-title" class="text-xl font-bold text-slate-800">Đăng Nhập Vào MeTom</h3>
-                <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Quản lý tiêu dùng thông minh dành cho sinh viên</p>
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 relative overflow-hidden group">
+            <!-- Mèo in chìm ở góc nền màn hình Login -->
+            <div class="cat-watermark text-slate-900 text-9xl">
+                <i class="fa-solid fa-cat"></i>
             </div>
             
-            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+            <div class="text-center mb-6 relative z-10">
+                <div class="bg-gradient-to-br from-blue-900 to-indigo-800 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-3 text-2xl relative">
+                    <i class="fa-solid fa-cat absolute -top-2 -right-2 text-amber-400 text-lg transform rotate-12"></i>
+                    <span class="font-bold tracking-tight">M</span>
+                </div>
+                <h3 id="auth-title" class="text-xl font-bold text-slate-800">Đăng Nhập Vào MeTom</h3>
+                <p id="auth-subtitle" class="text-xs text-slate-400 mt-1">Hạn chế mì tôm - Quản lý chi tiêu thông minh cùng linh vật MeTom</p>
+            </div>
+            
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4 relative z-10">
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Email Sinh Viên *</label>
                     <input type="email" id="auth-email" required placeholder="example@student.edu.vn" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
@@ -43,12 +66,12 @@
                     <input type="password" id="auth-password" required placeholder="••••••••" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 
-                <button type="submit" id="btn-auth-submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm">
-                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập
+                <button type="submit" id="btn-auth-submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl text-sm transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập
                 </button>
             </form>
 
-            <div class="text-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500">
+            <div class="text-center mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 relative z-10">
                 <span id="auth-switch-text">Chưa có tài khoản?</span>
                 <button onclick="toggleAuthMode()" id="btn-auth-switch" class="text-blue-600 font-bold ml-1 hover:underline">Đăng ký ngay</button>
             </div>
@@ -57,23 +80,38 @@
 
     <!-- MAIN APP INTERFACE -->
     <div id="app-screen" class="hidden">
-        <nav class="bg-blue-900 text-white shadow-lg sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- HEADER / NAVBAR CẢI TIẾN TÍCH HỢP LINH VẬT MÈO IN CHÌM -->
+        <nav class="bg-gradient-to-r from-blue-950 via-blue-900 to-indigo-950 text-white shadow-lg sticky top-0 z-40 overflow-hidden">
+            <!-- Background linh vật mèo in mờ lặp lại nghệ thuật trên thanh ngang -->
+            <div class="absolute inset-0 opacity-10 flex items-center justify-around pointer-events-none select-none text-2xl">
+                <i class="fa-solid fa-cat transform -rotate-12"></i>
+                <i class="fa-solid fa-wallet transform rotate-45"></i>
+                <i class="fa-solid fa-cat transform rotate-12"></i>
+                <i class="fa-solid fa-bowl-food transform -rotate-45"></i>
+                <i class="fa-solid fa-cat transform rotate-45"></i>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
-                        <div class="w-10 h-10 rounded-lg mr-3 shadow-md overflow-hidden bg-slate-800 flex items-center justify-center shrink-0">
-                            <img src="ICON-phần-mêm-quản-lý-chi-tiêu-removebg-preview.ico" alt="MeTom Icon" class="w-full h-full object-cover">
+                        <!-- Icon thương hiệu đổi mới mềm mại -->
+                        <div class="w-10 h-10 rounded-xl mr-3 shadow-md bg-white flex items-center justify-center shrink-0 border border-blue-800 relative">
+                            <i class="fa-solid fa-cat text-blue-900 text-xl"></i>
+                            <span class="absolute -bottom-1 -right-1 bg-amber-400 text-[8px] text-slate-900 px-1 font-extrabold rounded-md"><i class="fa-solid fa-wallet"></i></span>
                         </div>
                         <div>
-                            <span class="font-bold text-lg tracking-wide block leading-none">METOM FINANCE</span>
-                            <span id="user-display-email" class="text-xs text-blue-300">Đang tải tài khoản...</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-bold text-lg tracking-wide block leading-none">METOM FINANCE</span>
+                                <i class="fa-solid fa-face-smile-wink text-amber-400 text-xs"></i>
+                            </div>
+                            <span id="user-display-email" class="text-xs text-blue-200">Đang tải tài khoản...</span>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm">
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-sm font-semibold flex items-center transition shadow-sm">
                             <i class="fa-solid fa-download mr-2"></i> Xuất CSV
                         </button>
-                        <button onclick="handleLogout()" class="bg-rose-700 hover:bg-rose-600 px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition shadow-sm" title="Đăng xuất">
+                        <button onclick="handleLogout()" class="bg-rose-700 hover:bg-rose-600 px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition shadow-sm" title="Đăng xuất">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         </button>
                     </div>
@@ -82,60 +120,65 @@
         </nav>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-            <!-- Thông số thẻ -->
+            <!-- Thông số thẻ tổng quan -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden group">
+                    <div class="cat-watermark text-blue-500 text-6xl"><i class="fa-solid fa-cat"></i></div>
+                    <div class="relative z-10">
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng chi tiêu tháng này</p>
                         <p id="total-spend" class="text-2xl font-bold text-slate-900 mt-1">0 đ</p>
                     </div>
-                    <div class="p-3.5 bg-blue-50 text-blue-700 rounded-2xl"><i class="fa-solid fa-wallet text-xl"></i></div>
+                    <div class="p-3.5 bg-blue-50 text-blue-700 rounded-2xl relative z-10"><i class="fa-solid fa-wallet text-xl"></i></div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden group">
+                    <div class="cat-watermark text-emerald-500 text-6xl"><i class="fa-solid fa-box"></i></div>
+                    <div class="relative z-10">
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng số sản phẩm</p>
                         <p id="total-items" class="text-2xl font-bold text-slate-800 mt-1">0 SP</p>
                     </div>
-                    <div class="p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl"><i class="fa-solid fa-basket-shopping text-xl"></i></div>
+                    <div class="p-3.5 bg-emerald-50 text-emerald-700 rounded-2xl relative z-10"><i class="fa-solid fa-basket-shopping text-xl"></i></div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden group">
+                    <div class="cat-watermark text-rose-500 text-6xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="relative z-10">
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Quá hạn / Cần đóng</p>
                         <p id="expired-count" class="text-2xl font-bold text-rose-600 mt-1">0 SP</p>
                     </div>
-                    <div class="p-3.5 bg-rose-50 text-rose-700 rounded-2xl"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
+                    <div class="p-3.5 bg-rose-50 text-rose-700 rounded-2xl relative z-10"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hạn (Dưới 3 ngày)</p>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between relative overflow-hidden group">
+                    <div class="cat-watermark text-amber-500 text-6xl"><i class="fa-solid fa-hourglass"></i></div>
+                    <div class="relative z-10">
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hạn (&lt; 3 ngày)</p>
                         <p id="expiring-count" class="text-2xl font-bold text-amber-500 mt-1">0 SP</p>
                     </div>
-                    <div class="p-3.5 bg-amber-50 text-amber-700 rounded-2xl"><i class="fa-solid fa-hourglass-half text-xl"></i></div>
+                    <div class="p-3.5 bg-amber-50 text-amber-700 rounded-2xl relative z-10"><i class="fa-solid fa-hourglass-half text-xl"></i></div>
                 </div>
             </div>
 
-            <!-- Gợi ý tính năng tiết kiệm -->
-            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-2xl mb-6 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="bg-amber-500 text-white p-2.5 rounded-xl"><i class="fa-solid fa-gift text-lg"></i></div>
+            <!-- Gợi ý tính năng tiết kiệm hóm hỉnh mang đậm dấu ấn MeTom -->
+            <div class="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-100 border border-amber-200 p-5 rounded-2xl mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden group">
+                <div class="absolute right-4 bottom-0 opacity-10 text-8xl text-orange-900 pointer-events-none"><i class="fa-solid fa-bowl-food"></i></div>
+                <div class="flex items-center space-x-4 relative z-10">
+                    <div class="bg-gradient-to-br from-amber-500 to-orange-500 text-white p-3 rounded-2xl shadow-md shrink-0 animate-bounce"><i class="fa-solid fa-cat text-xl"></i></div>
                     <div>
-                        <h4 class="font-bold text-slate-800 text-sm">Mẹo tiết kiệm tháng này từ MeTom</h4>
-                        <p class="text-xs text-slate-500">Quản lý chi tiêu thôi chưa đủ! Mở tài khoản MB Bank cùng MeTom để sở hữu tài khoản 0đ phí: Không phí duy trì, không phí chuyển khoản, tiết kiệm từng đồng nhỏ nhất.</p>
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">Mẹo ăn ngon - Ví tròn cùng chú mèo MeTom!</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed mt-0.5">Hôm nào cạn ví lại phải hãm mì tôm? Hãy để MeTom giúp bạn làm chủ số dư! Mở thẻ MB Bank ngay hôm nay để nhận đặc quyền 0đ phí trọn đời: Không phí chuyển khoản, không phí duy trì tài khoản, giữ trọn từng đồng nhỏ nhất cho sinh viên.</p>
                     </div>
                 </div>
-                <a href="https://mbbank.onelink.me/QPF5?pid=SF%20Email%20Warmup&c=SF_Email_WarmUP_AppInstall&af_force_deeplink=true&af_dp=mbbank%3A%2F%2F&referral_code=5D6ARJ7QZFTUUPMV25C4X">Quyết tâm!!!</a>
+                <a href="https://mbbank.onelink.me/QPF5?pid=SF%20Email%20Warmup&c=SF_Email_WarmUP_AppInstall&af_force_deeplink=true&af_dp=mbbank%3A%2F%2F&referral_code=5D6ARJ7QZFTUUPMV25C4X" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition whitespace-nowrap shadow-md hover:scale-105 transform">Quyết tâm ngay!</a>
             </div>
 
-            <!-- Bảng dữ liệu và Form -->
+            <!-- Bảng dữ liệu và Form nhập liệu -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white p-1.5 rounded-xl shadow-sm border border-slate-100 flex space-x-1">
-                        <button id="btn-tab-table" onclick="switchTab('table')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white">
+                    <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 flex space-x-1">
+                        <button id="btn-tab-table" onclick="switchTab('table')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white">
                             <i class="fa-solid fa-table-list"></i><span>Bảng Chi Tiêu Chi Tiết</span>
                         </button>
-                        <button id="btn-tab-vault" onclick="switchTab('vault')" class="flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50">
+                        <button id="btn-tab-vault" onclick="switchTab('vault')" class="flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50">
                             <i class="fa-solid fa-receipt"></i><span>Kho Hóa Đơn Số Hóa</span>
-                            <span id="invoice-count-badge" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">0</span>
+                            <span id="invoice-count-badge" class="bg-slate-200 text-slate-800 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1">0</span>
                         </button>
                     </div>
 
@@ -143,9 +186,9 @@
                     <div id="tab-table-content" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
                         <div class="px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
                             <div>
-                                <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-table text-blue-600 mr-2"></i> Bảng Nhập Liệu Tiêu Dùng</h2>
+                                <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-cat text-blue-600 mr-2"></i> Nhật Ký Tiêu Dùng Sinh Viên</h2>
                             </div>
-                            <select id="filter-category" onchange="renderTable()" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none">
+                            <select id="filter-category" onchange="renderTable()" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="all">Tất cả danh mục</option>
                                 <option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option>
                                 <option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option>
@@ -172,85 +215,88 @@
                         </div>
                     </div>
 
-                    <!-- Kho Hóa Đơn -->
+                    <!-- Kho Hóa Đơn Số Hóa -->
                     <div id="tab-vault-content" class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
-                            <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-receipt text-emerald-600 mr-2"></i> Kho Lưu Trữ Hóa Đơn</h2>
-                            <label class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-sm">
+                            <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-receipt text-emerald-600 mr-2"></i> Biên Lai Đám Mây</h2>
+                            <label class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 cursor-pointer shadow-sm transition">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Tải hóa đơn lên
                                 <input type="file" id="invoice-file-input" accept="image/*" class="hidden" onchange="handleInvoiceUpload(event)">
                             </label>
                         </div>
                         <div class="p-6">
                             <div id="invoice-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-                            <div id="invoice-empty" class="hidden text-center py-12 text-slate-400">Không có hóa đơn</div>
+                            <div id="invoice-empty" class="hidden text-center py-12 text-slate-400"><i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>Chưa lưu trữ hóa đơn nào</div>
                         </div>
                     </div>
 
-                    <!-- KHU VỰC BANNER QUẢNG CÁO & VOUCHER -->
+                    <!-- KHU VỰC BANNER QUẢNG CÁO & ĐỐI TÁC -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                        <!-- Banner Đối tác Ngân hàng -->
-                        <div class="bg-gradient-to-br from-indigo-900 to-purple-800 text-white p-5 rounded-2xl shadow-sm border border-indigo-950 flex flex-col justify-between relative overflow-hidden group">
-                            <div class="absolute -right-6 -bottom-6 text-indigo-700/20 text-9xl transform -rotate-12 group-hover:scale-110 transition duration-300">
-                                <i class="fa-solid fa-credit-card"></i>
+                        <!-- Banner Đối tác độc quyền có in chìm linh vật mèo ôm mì tôm -->
+                        <div class="bg-gradient-to-br from-indigo-950 to-purple-900 text-white p-5 rounded-2xl shadow-sm border border-indigo-950 flex flex-col justify-between relative overflow-hidden group">
+                            <!-- Chú mèo ôm bát mì / ví tiền cách điệu góc phải banner -->
+                            <div class="cat-watermark text-indigo-700/30 text-9xl">
+                                <i class="fa-solid fa-cat"></i>
                             </div>
                             <div class="relative z-10">
-                                <span class="bg-amber-500 text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md tracking-wider">🔥 HOT AFFILIATE</span>
+                                <span class="bg-amber-400 text-slate-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md tracking-wider">🔥 HOT AFFILIATE</span>
                                 <h4 class="font-bold text-base mt-2 leading-snug">Quảng cáo của đối tác</h4>
-                                <p class="text-xs text-indigo-200 mt-1.5 max-w-[85%]">Nơi kết nối thương hiệu của bạn với cộng đồng người dùng MeTom.</p>
+                                <p class="text-xs text-indigo-200 mt-1.5 max-w-[85%]">Kết nối thương hiệu sản phẩm của bạn với cộng đồng người dùng trẻ trung, năng động của hệ sinh thái MeTom Finance.</p>
                             </div>
-                            <div class="mt-4 relative z-10">
+                            <div class="mt-5 relative z-10">
                                 <a href="mailto:23000908@hus.edu.vn" target="_blank" class="inline-flex items-center gap-1.5 bg-white hover:bg-slate-100 text-indigo-900 text-xs font-bold px-4 py-2 rounded-xl transition shadow-md">
-                                    <span>Liên hệ ngay</span><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    <span>Đặt banner ngay</span><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                 </a>
                             </div>
                         </div>
 
-                        <!-- Banner Ưu đãi sinh viên -->
+                        <!-- Banner Ưu đãi / Hợp tác truyền thông -->
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden group">
-                            <div class="absolute -right-4 -bottom-6 text-slate-100 text-9xl transform rotate-12 group-hover:scale-110 transition duration-300">
+                            <div class="cat-watermark text-slate-100 text-9xl">
                                 <i class="fa-solid fa-tags"></i>
                             </div>
                             <div class="relative z-10">
                                 <span class="bg-rose-50 text-rose-600 border border-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-md">VOUCHER ĐỘC QUYỀN</span>
-                                <h4 class="font-bold text-slate-800 text-base mt-2 leading-snug">Hợp tác quảng cáo </h4>
-                                <p class="text-xs text-slate-400 mt-1.5 max-w-[85%]">MeTom sẵn sàng đồng hành cùng các thương hiệu để tối ưu hoá chiến dịch truyền thông, tiếp cận cộng đồng người dùng tiềm năng và năng động.</p>
+                                <h4 class="font-bold text-slate-800 text-base mt-2 leading-snug">Hợp tác quảng cáo với MeTom</h4>
+                                <p class="text-xs text-slate-400 mt-1.5 max-w-[85%]">Sẵn sàng đồng hành cùng các studio ảnh nghệ thuật, nhãn hàng tiêu dùng, cửa hàng tiện lợi để gia tăng tỷ lệ chuyển đổi hiệu quả.</p>
                             </div>
-                            <div class="mt-4 relative z-10">
-                                <button onclick="navigator.clipboard.writeText('23000908@hus.edu.vn'); alert('MeTom xin cảm ơn sự quan tâm của thương hiệu. Chúng tôi đã sao chép địa chỉ email của mình để bạn liên hệ.')" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md">
-                                    <i class="fa-solid fa-copy"></i><span>Sao chép email</span>
+                            <div class="mt-5 relative z-10">
+                                <button onclick="navigator.clipboard.writeText('23000908@hus.edu.vn'); alert('MeTom xin cảm ơn sự quan tâm của bạn. Địa chỉ mail liên hệ [23000908@hus.edu.vn] đã được sao chép vào bộ nhớ tạm.')" class="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-md">
+                                    <i class="fa-solid fa-copy"></i><span>Sao chép email đối tác</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KHỐI ĐỀ NGHỊ HỢP TÁC & THÔNG TIN LIÊN HỆ ĐỂ LẤP HOÀN TOÀN KHOẢNG TRỐNG -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
-                        <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-blue-50/50 to-transparent pointer-events-none"></div>
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="space-y-1">
+                    <!-- KHỐI HỢP TÁC TRUYỀN THÔNG ĐẦY ĐỦ KHÔNG KHOẢNG TRỐNG -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+                        <div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-indigo-50/40 to-transparent pointer-events-none"></div>
+                        <div class="cat-watermark text-slate-100 text-8xl"><i class="fa-solid fa-handshake"></i></div>
+                        
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+                            <div class="space-y-1.5">
                                 <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                                    <i class="fa-solid fa-handshake text-blue-600"></i> Hợp Tác Truyền Thông & Quảng Cáo
+                                    <i class="fa-solid fa-cat text-blue-600"></i> Không Gian Hợp Tác Sinh Viên & Nhãn Hàng
                                 </h4>
                                 <p class="text-xs text-slate-500 leading-relaxed max-w-xl">
-                                    MeTom Finance là nền tảng quản lý chi tiêu được phát triển bởi sinh viên và dành cho sinh viên, sở hữu lượng tương tác cao và ổn định từ cộng đồng trẻ năng động. Chúng tôi sẵn sàng đồng hành cùng các nhãn hàng tiêu dùng, đơn vị giáo dục hay các studio chụp ảnh nghệ thuật thông qua các vị trí đặt banner, liên kết thương mại độc quyền với tỷ lệ chuyển đổi tối ưu.
+                                    MeTom Finance là ứng dụng quản lý chi tiêu được kiến tạo bởi sinh viên và định hướng tối ưu cho cộng đồng học đường trẻ tuổi. Chúng tôi hỗ trợ vị trí liên kết truyền thông, đặt Banner tiếp thị thông minh, quảng bá độc quyền các studio chân dung nghệ thuật với lưu lượng tiếp cận ổn định.
                                 </p>
                             </div>
                             
-                            <!-- Thông tin liên hệ -->
+                            <!-- Khối liên hệ đã cập nhật -->
                             <div class="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-3 shrink-0 justify-end">
-                                <a href="mailto:ktcancute@gmail.com" class="inline-flex items-center gap-2 border border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-xs transition shadow-sm">
-                                    <i class="fa-regular fa-envelope text-blue-600 text-sm"></i>
+                                <a href="mailto:23000908@hus.edu.vn" class="inline-flex items-center gap-2 border border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700 font-medium px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
+                                    <i class="fa-regular fa-envelope text-blue-600 text-base"></i>
                                     <div>
-                                        <p class="text-[9px] text-slate-400 font-semibold uppercase leading-none">Gửi Email</p>
-                                        <p class="font-semibold mt-0.5">23000908@hus.edu.vn</p>
+                                        <p class="text-[9px] text-slate-400 font-bold uppercase leading-none">Gửi Hòm Thư</p>
+                                        <p class="font-bold mt-0.5 text-slate-800">23000908@hus.edu.vn</p>
                                     </div>
                                 </a>
-                                <a href="tel:0373489563" class="inline-flex items-center gap-2 border border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-xs transition shadow-sm">
+                                <a href="tel:0373489563" class="inline-flex items-center gap-2 border border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-700 font-medium px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
                                     <i class="fa-solid fa-phone text-emerald-600 text-sm"></i>
                                     <div>
-                                        <p class="text-[9px] text-slate-400 font-semibold uppercase leading-none">Hotline / Zalo</p>
-                                        <p class="font-semibold mt-0.5">0373.489.563</p>
+                                        <p class="text-[9px] text-slate-400 font-bold uppercase leading-none">Hotline / Zalo</p>
+                                        <p class="font-bold mt-0.5 text-slate-800">0373.489.563</p>
                                     </div>
                                 </a>
                             </div>
@@ -259,28 +305,28 @@
 
                 </div>
 
-                <!-- Cột Phải Form và Biểu đồ -->
+                <!-- Cột Phải: Form nhập liệu và Biểu đồ hình tròn -->
                 <div class="space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
                         <h3 id="form-title" class="font-bold text-slate-800 text-base mb-4 flex items-center"><i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới</h3>
-                        <form id="add-item-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tên Sản Phẩm *</label><input type="text" id="form-name" required class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"></div>
-                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Loại Sản Phẩm *</label><select id="form-category" required class="w-full border rounded-xl px-3 py-2 bg-white outline-none focus:ring-2 focus:ring-blue-500"><option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option><option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option><option value="Đồ dùng gia đình">Đồ dùng gia đình</option><option value="Y tế & Sức khỏe">Y tế & Sức khỏe</option><option value="Điện, Nước & Internet">Điện, Nước & Internet</option><option value="Khác">Khác</option></select></div>
-                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Giá Tiền (VND) *</label><input type="number" id="form-price" required class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"></div>
+                        <form id="add-item-form" onsubmit="handleFormSubmit(event)" class="space-y-4 relative z-10">
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tên Sản Phẩm *</label><input type="text" id="form-name" required placeholder="Ví dụ: Mì tôm ăn liền, Sách giáo trình..." class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Loại Sản Phẩm *</label><select id="form-category" required class="w-full border rounded-xl px-3 py-2 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"><option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option><option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option><option value="Đồ dùng gia đình">Đồ dùng gia đình</option><option value="Y tế & Sức khỏe">Y tế & Sức khỏe</option><option value="Điện, Nước & Internet">Điện, Nước & Internet</option><option value="Khác">Khác</option></select></div>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Giá Tiền (VND) *</label><input type="number" id="form-price" required placeholder="0" class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ngày Mua *</label><input type="date" id="form-buy-date" required class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500"></div>
-                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Dự Kiến Hết</label><input type="date" id="form-expire-date" class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500"></div>
+                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ngày Mua *</label><input type="date" id="form-buy-date" required class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-500 mb-1">Dự Kiến Hết</label><input type="date" id="form-expire-date" class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                             </div>
-                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ghi Chú</label><input type="text" id="form-notes" class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"></div>
-                            <div class="flex gap-2">
-                                <button id="btn-cancel-edit" type="button" onclick="resetFormState()" class="hidden flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl transition text-sm">Đặt lại / Hủy</button>
-                                <button type="submit" id="btn-submit" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition text-sm">Lưu dữ liệu</button>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ghi Chú</label><input type="text" id="form-notes" placeholder="Ghi chú thêm chi tiết..." class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
+                            <div class="flex gap-2 pt-2">
+                                <button id="btn-cancel-edit" type="button" onclick="resetFormState()" class="hidden flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-sm">Hủy sửa</button>
+                                <button type="submit" id="btn-submit" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-sm">Lưu dữ liệu</button>
                             </div>
                         </form>
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center"><i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i> Cơ Cấu Chi Tiêu Thực Tế</h3>
+                        <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center"><i class="fa-solid fa-chart-pie mr-2 text-indigo-500"></i> Cơ Cấu Tiêu Dùng Thực Tế</h3>
                         <div class="flex flex-col items-center">
                             <div class="w-44 h-44 relative mb-4"><canvas id="categoryChart"></canvas></div>
                             <div id="chart-legend" class="w-full space-y-2.5 pt-3 border-t"></div>
@@ -291,28 +337,28 @@
         </div>
     </div>
 
-    <!-- Modals Thông Báo Xác Nhận -->
+    <!-- Modals Hộp Thoại Hệ Thống -->
     <div id="custom-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
             <div id="dialog-icon" class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"></div>
             <h4 id="dialog-title" class="text-lg font-bold mb-2"></h4>
             <p id="dialog-message" class="text-sm text-slate-500 mb-6"></p>
             <div class="flex justify-center space-x-2">
-                <button id="dialog-btn-cancel" onclick="closeCustomModal()" class="bg-slate-100 px-4 py-2 rounded-xl text-sm font-bold">Hủy bỏ</button>
-                <button id="dialog-btn-confirm" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold">Đồng ý</button>
+                <button id="dialog-btn-cancel" onclick="closeCustomModal()" class="bg-slate-100 px-5 py-2 rounded-xl text-sm font-bold text-slate-600">Hủy bỏ</button>
+                <button id="dialog-btn-confirm" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-sm">Đồng ý</button>
             </div>
         </div>
     </div>
 
-    <!-- Lightbox Xem Ảnh Hóa Đơn -->
+    <!-- Lightbox Xem Ảnh Biên Lai -->
     <div id="lightbox-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onclick="closeLightbox()">
         <div class="max-w-3xl max-h-full relative">
-            <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
+            <img id="lightbox-img" src="" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain border border-slate-800">
             <button class="absolute top-2 right-2 text-white bg-black/40 hover:bg-black/60 w-8 h-8 rounded-full flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
         </div>
     </div>
 
-    <!-- TÍCH HỢP SDK FIREBASE -->
+    <!-- SDK FIREBASE KHÔNG THAY ĐỔI LOGIC[cite: 1] -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -348,11 +394,10 @@
         };
         const categoryOrder = ["Thực phẩm & Ăn uống", "Hóa mỹ phẩm & Vệ sinh", "Đồ dùng gia đình", "Y tế & Sức khỏe", "Điện, Nước & Internet", "Khác"];
 
-        // HỆ THỐNG XỬ LÝ TÀI KHOẢN
         window.toggleAuthMode = function() {
             isSignUpMode = !isSignUpMode;
             document.getElementById('auth-title').textContent = isSignUpMode ? "Đăng Ký Tài Khoản MeTom" : "Đăng Nhập Vào MeTom";
-            document.getElementById('btn-auth-submit').innerHTML = isSignUpMode ? `<i class="fa-solid fa-user-plus mr-1"></i> Đăng Ký` : `<i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập`;
+            document.getElementById('btn-auth-submit').innerHTML = isSignUpMode ? `<i class="fa-solid fa-user-plus mr-1"></i> Đăng Ký Tài Khoản` : `<i class="fa-solid fa-right-to-bracket mr-1"></i> Đăng Nhập`;
             document.getElementById('auth-switch-text').textContent = isSignUpMode ? "Đã có tài khoản?" : "Chưa có tài khoản?";
             document.getElementById('btn-auth-switch').textContent = isSignUpMode ? "Đăng nhập ngay" : "Đăng ký ngay";
         };
@@ -364,12 +409,12 @@
             try {
                 if (isSignUpMode) {
                     await createUserWithEmailAndPassword(auth, email, password);
-                    alert("Đăng ký tài khoản thành công!");
+                    alert("Đăng ký tài khoản hệ thống MeTom thành công!");
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
                 }
             } catch (error) {
-                alert("Lỗi xác thực: " + error.message);
+                alert("Lỗi xác thực tài khoản: " + error.message);
             }
         };
 
@@ -383,7 +428,7 @@
                 currentUserId = user.uid;
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
-                document.getElementById('user-display-email').textContent = `Tài khoản: ${user.email}`;
+                document.getElementById('user-display-email').textContent = `Mèo MeTom chào bạn: ${user.email}`;
                 document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
                 await loadUserData();
             } else {
@@ -393,7 +438,6 @@
             }
         });
 
-        // TẢI DỮ LIỆU ĐÁM MÂY FLUSH THEO USER ID
         async function loadUserData() {
             try {
                 const qSpend = query(collection(db, "budgets"), where("userId", "==", currentUserId));
@@ -413,11 +457,10 @@
                 renderTable();
                 renderInvoices();
             } catch (err) {
-                console.error("Lỗi lấy dữ liệu: ", err);
+                console.error("Lỗi đồng bộ dữ liệu: ", err);
             }
         }
 
-        // CHỨC NĂNG SỬA DỮ LIỆU
         window.startEditItem = function(docId) {
             const item = database.find(x => x.docId === docId);
             if (!item) return;
@@ -438,7 +481,6 @@
             document.getElementById('add-item-form').scrollIntoView({ behavior: 'smooth' });
         };
 
-        // HỦY BỎ TRẠNG THÁI SỬA / ĐẶT LẠI FORM TRẮNG
         window.resetFormState = function() {
             editingId = null;
             document.getElementById('add-item-form').reset();
@@ -449,7 +491,6 @@
             document.getElementById('btn-cancel-edit').classList.add('hidden');
         };
 
-        // XỬ LÝ SUBMIT FORM (LƯU MỚI HOẶC UPDATE)
         window.handleFormSubmit = async function(event) {
             event.preventDefault();
             const name = document.getElementById('form-name').value.trim();
@@ -473,15 +514,14 @@
                 document.getElementById('form-buy-date').value = new Date().toISOString().split('T')[0];
                 await loadUserData();
             } catch (error) {
-                alert("Không thể lưu dữ liệu: " + error.message);
+                alert("Lỗi lưu trữ dữ liệu: " + error.message);
             }
         };
 
-        // CHỨC NĂNG XÓA MỤC CHI TIÊU
         window.promptDeleteItem = function(docId) {
             showCustomConfirm({
                 title: "Xóa sản phẩm này?",
-                message: "Bạn có chắc chắn muốn loại bỏ mặt hàng này khỏi cơ sở dữ liệu?",
+                message: "Bạn chắc chắn muốn loại bỏ mặt hàng này khỏi nhật ký chi tiêu chứ?",
                 type: "danger",
                 onConfirm: async () => {
                     await deleteDoc(doc(db, "budgets", docId));
@@ -491,7 +531,6 @@
             });
         };
 
-        // TẢI ẢNH HÓA ĐƠN
         window.handleInvoiceUpload = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -513,8 +552,8 @@
 
         window.promptDeleteInvoice = function(docId) {
             showCustomConfirm({
-                title: "Xóa hóa đơn?",
-                message: "Biên lai này sẽ bị xóa vĩnh viễn khỏi tài khoản đám mây của bạn.",
+                title: "Xóa hóa đơn vĩnh viễn?",
+                message: "Biên lai số hóa này sẽ bị gỡ hoàn toàn khỏi đám mây lưu trữ của bạn.",
                 type: "danger",
                 onConfirm: async () => {
                     await deleteDoc(doc(db, "invoices", docId));
@@ -524,7 +563,6 @@
             });
         };
 
-        // RENDER BẢNG VÀ BIỂU ĐỒ GIAO DIỆN
         window.formatVND = function(amount) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         };
@@ -544,8 +582,8 @@
             const btnVault = document.getElementById('btn-tab-vault');
             document.getElementById('tab-table-content').classList.toggle('hidden', tabName !== 'table');
             document.getElementById('tab-vault-content').classList.toggle('hidden', tabName !== 'vault');
-            btnTable.className = tabName === 'table' ? "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white" : "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
-            btnVault.className = tabName === 'vault' ? "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white" : "flex-1 py-2.5 px-4 rounded-lg text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
+            btnTable.className = tabName === 'table' ? "flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white shadow-sm" : "flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
+            btnVault.className = tabName === 'vault' ? "flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 bg-blue-900 text-white shadow-sm" : "flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-50";
         };
 
         window.renderTable = function() {
@@ -572,9 +610,9 @@
                         <td class="px-4 py-4 text-center text-slate-400 font-semibold">${filteredCount}</td>
                         <td class="px-4 py-4"><div class="font-bold text-slate-800">${item.name}</div>${item.notes ? `<div class="text-xs text-slate-400 mt-0.5">${item.notes}</div>` : ''}</td>
                         <td class="px-4 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg ${categoryStyle.bgClass} ${categoryStyle.textClass} border ${categoryStyle.borderClass}">${item.category}</span></td>
-                        <td class="px-4 py-4 text-right font-extrabold text-slate-900">${formatVND(item.price)}</td>
-                        <td class="px-4 py-4 text-center"><div class="text-xs font-semibold">M: <span class="font-normal text-slate-400">${item.buyDate}</span></div>${item.expireDate ? `<div class="text-xs font-semibold mt-0.5">H: <span class="font-normal text-slate-400">${item.expireDate}</span></div>${statusText ? `<span class="inline-block text-[10px] font-extrabold border rounded px-1 mt-1 ${badgeClass}">${statusText}</span>` : ''}` : ''}</td>
-                        <td class="px-4 py-4 text-center"><div class="flex justify-center space-x-2 text-base"><button onclick="startEditItem('${item.docId}')" class="text-slate-500 hover:text-blue-700 p-1 transition" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="promptDeleteItem('${item.docId}')" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Xóa"><i class="fa-solid fa-trash-can"></i></button></div></td>
+                        <td class="px-4 py-4 text-right font-bold text-slate-900">${formatVND(item.price)}</td>
+                        <td class="px-4 py-4 text-center"><div class="text-xs font-semibold">Mua: <span class="font-normal text-slate-400">${item.buyDate}</span></div>${item.expireDate ? `<div class="text-xs font-semibold mt-0.5">Hết: <span class="font-normal text-slate-400">${item.expireDate}</span></div>${statusText ? `<span class="inline-block text-[10px] font-extrabold border rounded px-1 mt-1 ${badgeClass}">${statusText}</span>` : ''}` : ''}</td>
+                        <td class="px-4 py-4 text-center"><div class="flex justify-center space-x-2 text-base"><button onclick="startEditItem('${item.docId}')" class="text-slate-400 hover:text-blue-700 p-1 transition" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="promptDeleteItem('${item.docId}')" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Xóa"><i class="fa-solid fa-trash-can"></i></button></div></td>
                     </tr>`;
             });
 
@@ -648,7 +686,6 @@
             }
         }
 
-        // CUSTOM MODAL DIALOG CONTROLLER
         let customModalCallback = null;
         window.showCustomConfirm = function(options) {
             const modal = document.getElementById('custom-modal');
@@ -673,7 +710,7 @@
         };
 
         window.exportToCSV = function() {
-            if(database.length === 0) { alert("Không có dữ liệu để xuất!"); return; }
+            if(database.length === 0) { alert("Không có dữ liệu chi tiêu nào để xuất!"); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFFSTT,Ten San Pham,Danh Muc,Gia Tien (VND),Ngay Mua,Du Kien Het,Ghi Chu\n";
             database.forEach((item, index) => {
                 csvContent += `${index + 1},"${item.name}","${item.category}",${item.price},"${item.buyDate}","${item.expireDate || ''}","${item.notes || ''}"\n`;
@@ -681,7 +718,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `MeTom_Finance_Export_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `MeTom_Finance_Data_${new Date().toISOString().split('T')[0]}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
