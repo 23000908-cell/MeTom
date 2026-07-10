@@ -1,0 +1,110 @@
+:root {
+    --primary-color: #2c3e50;
+    --accent-color: #3498db;
+    --danger-color: #e74c3c;
+    --star-color: #f1c40f;
+    --bg-color: #f8f9fa;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+.nav-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.nav-item:hover, .nav-item.active {
+    background-color: var(--accent-color);
+    border-radius: 4px;
+}
+
+/* QUẢN LÝ ẨN HIỆN TRANG */
+.page-content {
+    display: none; /* Mặc định ẩn hết */
+    padding: 20px;
+}
+.page-content.active {
+    display: block; /* Chỉ hiện trang có class active */
+}
+
+/* UI PHẦN NHẬP LIỆU & BẢNG */
+.container {
+    max-width: 1000px;
+    margin: auto;
+}
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.input-group input, .input-group select, .input-group button {
+    padding: 10px;
+    font-size: 16px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-bottom: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+th { background-color: #eee; }
+
+.fa-star {
+    cursor: pointer;
+    color: #ccc;
+}
+.fa-star.starred {
+    color: var(--star-color);
+}
+
+.checkout-zone {
+    text-align: right;
+    margin-top: 30px;
+}
+button.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+/* FAVORITES CARD */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+.fav-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--accent-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
