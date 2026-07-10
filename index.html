@@ -348,32 +348,45 @@
     </div>
 
     <!-- ================= TRANG 2: THỐNG KÊ (ANALYTICS) ================= -->
-    <div id="page-analytics" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i> Lịch sử chốt sổ</h2>
-                    <p class="text-xs text-slate-500 mt-1">Xem lại dữ liệu của các tháng đã lưu trữ</p>
-                </div>
-                <select id="analytics-month-select" onchange="renderAnalytics()" class="border border-slate-300 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 outline-none bg-slate-50 min-w-[200px]">
-                    <option value="">Chưa có dữ liệu lịch sử</option>
-                </select>
+<div id="page-analytics" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
+    
+    <!-- Biểu đồ so sánh tổng quan giữa các tháng (MỚI THÊM) -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-chart-bar text-blue-500 mr-2"></i> So sánh chi tiêu các tháng</h2>
+            <p class="text-xs text-slate-500 mt-1">Trực quan hóa xu hướng chi tiêu qua các mốc thời gian đã chốt sổ</p>
+        </div>
+        <div class="w-full h-64 relative">
+            <canvas id="compareMonthsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chi tiết lịch sử chốt sổ (Phần cũ được giữ lại và tối ưu) -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i> Lịch sử chi tiết theo tháng</h2>
+                <p class="text-xs text-slate-500 mt-1">Xem lại dữ liệu cơ cấu của từng tháng đã lưu trữ</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="flex flex-col items-center justify-center bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                    <p class="text-sm font-bold text-slate-500 mb-4">Biểu đồ cơ cấu tiêu dùng</p>
-                    <div class="w-56 h-56 relative"><canvas id="historyChart"></canvas></div>
+            <select id="analytics-month-select" onchange="renderAnalytics()" class="border border-slate-300 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 outline-none bg-slate-50 min-w-[200px]">
+                <option value="">Chưa có dữ liệu lịch sử</option>
+            </select>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="flex flex-col items-center justify-center bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                <p class="text-sm font-bold text-slate-500 mb-4">Biểu đồ cơ cấu tiêu dùng</p>
+                <div class="w-56 h-56 relative"><canvas id="historyChart"></canvas></div>
+            </div>
+            <div>
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-4">
+                    <p class="text-xs font-bold text-indigo-400 uppercase">Tổng chi tiêu tháng này</p>
+                    <p id="analytics-total" class="text-3xl font-black text-indigo-900 mt-1">0 đ</p>
                 </div>
-                <div>
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-4">
-                        <p class="text-xs font-bold text-indigo-400 uppercase">Tổng chi tiêu tháng này</p>
-                        <p id="analytics-total" class="text-3xl font-black text-indigo-900 mt-1">0 đ</p>
-                    </div>
-                    <div id="analytics-legend" class="space-y-3"></div>
-                </div>
+                <div id="analytics-legend" class="space-y-3"></div>
             </div>
         </div>
     </div>
+</div>
 
     <!-- ================= TRANG 3: YÊU THÍCH (FAVORITES) ================= -->
     <div id="page-favorites" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
@@ -442,6 +455,7 @@
         let favorites = []; 
         let chartInstance = null;
         let historyChartInstance = null;
+        let compareMonthsChartInstance = null; // <-- CHÈN DÒNG NÀY VÀO ĐÂY
         let editingId = null;
 
         const PRODUCT_DICTIONARY = {
@@ -1063,63 +1077,121 @@
             archivedMonths.forEach(m => {
                 select.innerHTML += `<option value="${m}">${m}</option>`;
             });
+            
+            // <-- THÊM ĐOẠN NÀY VÀO ĐÂY: Tự động chọn tháng đầu tiên nếu có dữ liệu
+            if(archivedMonths.length > 0 && !select.value) {
+                select.value = archivedMonths[0];
+            }
         }
 
-        // BỔ SUNG: Hàm hiển thị biểu đồ & thống kê dữ liệu chốt sổ lịch sử
-        window.renderAnalytics = function() {
-            const select = document.getElementById('analytics-month-select');
-            const targetMonth = select.value;
-            const labelTotal = document.getElementById('analytics-total');
-            const legendDiv = document.getElementById('analytics-legend');
-            
-            if (!targetMonth) {
-                labelTotal.textContent = "0 đ";
-                legendDiv.innerHTML = "<p class='text-xs text-slate-400 italic'>Hãy chốt sổ một tháng bất kỳ để xem lịch sử cơ cấu.</p>";
-                if(historyChartInstance) historyChartInstance.destroy();
-                historyChartInstance = null;
-                return;
-            }
+// BỔ SUNG & CẬP NHẬT: Hàm hiển thị biểu đồ & thống kê dữ liệu chốt sổ lịch sử
+window.renderAnalytics = function() {
+    // 1. XỬ LÝ BIỂU ĐỒ SO SÁNH CÁC THÁNG (MỚI)
+    const allArchivedItems = database.filter(i => i.isArchived && i.archiveMonth);
+    
+    // Nhóm và tính tổng tiền theo từng tháng chốt sổ
+    const monthlyTotals = {};
+    allArchivedItems.forEach(item => {
+        monthlyTotals[item.archiveMonth] = (monthlyTotals[item.archiveMonth] || 0) + parseFloat(item.price);
+    });
 
-            const monthItems = database.filter(i => i.isArchived && i.archiveMonth === targetMonth);
-            const totals = {};
-            categoryOrder.forEach(cat => totals[cat] = 0);
-            monthItems.forEach(item => { if (totals[item.category] !== undefined) totals[item.category] += parseFloat(item.price); });
-            
-            const dataValues = categoryOrder.map(cat => totals[cat]);
-            const backgroundColors = categoryOrder.map(cat => categoryMap[cat].color);
-            const totalSum = dataValues.reduce((a, b) => a + b, 0);
+    const monthsLabels = Object.keys(monthlyTotals); // Danh sách các tháng (VD: ["Tháng 05/2026", "Tháng 06/2026"])
+    const monthsData = Object.values(monthlyTotals); // Mảng tổng tiền tương ứng
 
-            labelTotal.textContent = formatVND(totalSum);
-            legendDiv.innerHTML = '';
-            
-            categoryOrder.forEach((cat, idx) => {
-                const percentage = totalSum > 0 ? ((totals[cat] / totalSum) * 100).toFixed(1) : 0;
-                legendDiv.innerHTML += `
-                    <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100 last:border-0">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full inline-block" style="background-color: ${backgroundColors[idx]}"></span>
-                            <span class="text-slate-700 font-medium">${cat}</span>
-                        </div>
-                        <div>
-                            <span class="font-bold text-slate-900">${formatVND(totals[cat])}</span>
-                            <span class="text-slate-400 ml-1 font-semibold">(${percentage}%)</span>
-                        </div>
-                    </div>`;
+    if (compareMonthsChartInstance) {
+        compareMonthsChartInstance.data.labels = monthsLabels;
+        compareMonthsChartInstance.data.datasets[0].data = monthsData;
+        compareMonthsChartInstance.update();
+    } else {
+        const compareCtx = document.getElementById('compareMonthsChart');
+        if (compareCtx) {
+            compareMonthsChartInstance = new Chart(compareCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthsLabels,
+                    datasets: [{
+                        label: 'Tổng chi tiêu (VND)',
+                        data: monthsData,
+                        backgroundColor: '#3b82f6', // Màu xanh thanh lịch đồng bộ hệ thống
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('vi-VN') + ' đ';
+                                }
+                            }
+                        }
+                    }
+                }
             });
+        }
+    }
 
-            if (historyChartInstance) {
-                historyChartInstance.data.datasets[0].data = dataValues;
-                historyChartInstance.update();
-            } else {
-                const historyCtx = document.getElementById('historyChart');
-                if(!historyCtx) return;
-                historyChartInstance = new Chart(historyCtx, {
-                    type: 'pie',
-                    data: { datasets: [{ data: dataValues, backgroundColor: backgroundColors, borderWidth: 1 }] },
-                    options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
-                });
-            }
-        };
+    // 2. XỬ LÝ BIỂU ĐỒ CƠ CẤU CHI TIẾT TỪNG THÁNG (PHẦN CŨ)
+    const select = document.getElementById('analytics-month-select');
+    const targetMonth = select.value;
+    const labelTotal = document.getElementById('analytics-total');
+    const legendDiv = document.getElementById('analytics-legend');
+    
+    if (!targetMonth) {
+        labelTotal.textContent = "0 đ";
+        legendDiv.innerHTML = "<p class='text-xs text-slate-400 italic'>Hãy chốt sổ một tháng bất kỳ hoặc chọn tháng ở trên để xem chi tiết cơ cấu.</p>";
+        if(historyChartInstance) historyChartInstance.destroy();
+        historyChartInstance = null;
+        return;
+    }
+
+    const monthItems = database.filter(i => i.isArchived && i.archiveMonth === targetMonth);
+    const totals = {};
+    categoryOrder.forEach(cat => totals[cat] = 0);
+    monthItems.forEach(item => { if (totals[item.category] !== undefined) totals[item.category] += parseFloat(item.price); });
+    
+    const dataValues = categoryOrder.map(cat => totals[cat]);
+    const backgroundColors = categoryOrder.map(cat => categoryMap[cat].color);
+    const totalSum = dataValues.reduce((a, b) => a + b, 0);
+
+    labelTotal.textContent = formatVND(totalSum);
+    legendDiv.innerHTML = '';
+    
+    categoryOrder.forEach((cat, idx) => {
+        const percentage = totalSum > 0 ? ((totals[cat] / totalSum) * 100).toFixed(1) : 0;
+        legendDiv.innerHTML += `
+            <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100 last:border-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full inline-block" style="background-color: ${backgroundColors[idx]}"></span>
+                    <span class="text-slate-700 font-medium">${cat}</span>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-900">${formatVND(totals[cat])}</span>
+                    <span class="text-slate-400 ml-1 font-semibold">(${percentage}%)</span>
+                </div>
+            </div>`;
+    });
+
+    if (historyChartInstance) {
+        historyChartInstance.data.datasets[0].data = dataValues;
+        historyChartInstance.update();
+    } else {
+        const historyCtx = document.getElementById('historyChart');
+        if(!historyCtx) return;
+        historyChartInstance = new Chart(historyCtx, {
+            type: 'pie',
+            data: { datasets: [{ data: dataValues, backgroundColor: backgroundColors, borderWidth: 1 }] },
+            options: { plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: false }
+        });
+    }
+};
 
     </script>
 </body>
