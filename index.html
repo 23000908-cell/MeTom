@@ -582,7 +582,7 @@
         };
 
         // ==========================================
-        // THUẬT TOÁN OCR CHỦ ĐỘNG (THEO CẢI TIẾN MỚI)
+        // THUẬT TOÁN OCR CHỦ ĐỘNG
         // ==========================================
         window.triggerInvoiceOCR = async function(invoiceId) {
             const inv = invoices.find(x => x.docId === invoiceId);
@@ -601,19 +601,17 @@
                 let detectedName = "";
                 const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
                 
-                // Lọc bỏ các dòng chứa siêu dữ liệu hóa đơn thông dụng để tìm tên mặt hàng thực tế
                 const filterKeywords = ["ngày", "ngay", "hóa đơn", "hoa don", "invoice", "mã", "ma số", "tel", "đc", "địa chỉ", "dia chi", "thu ngân", "khách", "khach", "tổng cộng", "tong cong", "thanh toán", "cộng", "total"];
                 
                 for (let line of lines) {
                     const lowLine = line.toLowerCase();
                     const containsFilter = filterKeywords.some(keyword => lowLine.includes(keyword));
-                    // Tìm dòng không chứa từ khóa lọc, độ dài vừa phải và không toàn ký tự số
                     if (!containsFilter && line.length > 3 && line.length < 50 && !/^\d+$/.test(lowLine)) {
                         detectedName = line;
                         break;
                     }
                 }
-                if (!detectedName) detectedName = inv.name; // Dự phòng tên ảnh nếu không bóc được dòng text ưng ý
+                if (!detectedName) detectedName = inv.name;
 
                 // 2. Phân tích bóc tách GIÁ TIỀN
                 let detectedPrice = "";
@@ -630,7 +628,7 @@
                 }
 
                 // 3. Sử dụng từ điển để tự động PHÂN LOẠI DANH MỤC
-                let detectedCategory = "Khác"; // Mặc định nếu không trùng khớp
+                let detectedCategory = "Khác";
                 const lowerName = detectedName.toLowerCase();
                 
                 for (const [category, keywords] of Object.entries(PRODUCT_DICTIONARY)) {
@@ -641,7 +639,6 @@
                     }
                 }
 
-                // Khôi phục lại tiêu đề trạng thái Form gốc
                 document.getElementById('form-title').innerHTML = `<i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới`;
 
                 // 4. Hộp thoại hiển thị kết quả & yêu cầu sự ĐỒNG Ý từ người dùng
@@ -770,7 +767,6 @@
                                 <p class="text-[10px] text-slate-400">${inv.date}</p>
                             </div>
                             <div class="flex items-center space-x-0.5">
-                                <!-- NÚT BẤM KÍNH LÚP KÍCH HOẠT OCR CHỦ ĐỘNG -->
                                 <button onclick="triggerInvoiceOCR('${inv.docId}')" class="text-blue-500 hover:text-blue-700 p-1 text-xs sm:text-sm" title="Trích xuất thông tin tự động">
                                     <i class="fa-solid fa-magnifying-glass-chart"></i>
                                 </button>
@@ -799,6 +795,9 @@
             document.getElementById('lightbox-modal').classList.add('hidden');
         };
 
+        // ==========================================
+        // CẬP NHẬT: HIỂN THỊ CẢ SỐ TIỀN VÀ TỈ LỆ %
+        // ==========================================
         function updateChart() {
             const totals = {};
             categoryOrder.forEach(cat => totals[cat] = 0);
@@ -812,9 +811,15 @@
             categoryOrder.forEach((cat, idx) => {
                 const percentage = totalDataSum > 0 ? ((totals[cat] / totalDataSum) * 100).toFixed(1) : 0;
                 legendDiv.innerHTML += `
-                    <div class="flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${backgroundColors[idx]}"></span><span class="text-slate-600 font-medium">${cat}</span></div>
-                        <div class="font-bold text-slate-800">${percentage}%</div>
+                    <div class="flex items-center justify-between text-xs py-0.5">
+                        <div class="flex items-center gap-2 min-w-0 flex-1 mr-2">
+                            <span class="w-2.5 h-2.5 rounded-full inline-block shrink-0" style="background-color: ${backgroundColors[idx]}"></span>
+                            <span class="text-slate-600 font-medium truncate">${cat}</span>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="font-bold text-slate-800">${formatVND(totals[cat])}</span>
+                            <span class="text-[10px] text-slate-400 ml-1.5 font-semibold">(${percentage}%)</span>
+                        </div>
                     </div>`;
             });
 
