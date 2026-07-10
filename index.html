@@ -124,13 +124,13 @@
         <div class="bg-white border-b border-slate-200 shadow-sm sticky top-16 z-30">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-6 overflow-x-auto">
                 <button onclick="switchMainTab('input')" id="main-nav-input" class="border-b-2 border-blue-600 text-blue-600 py-3 px-2 text-sm font-bold whitespace-nowrap transition">
-                    <i class="fa-solid fa-pen-to-square mr-2"></i>Nhập Liệu
+                    <i class="fa-solid fa-pen-to-square mr-2"></i>Nhập liệu
                 </button>
                 <button onclick="switchMainTab('analytics')" id="main-nav-analytics" class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 py-3 px-2 text-sm font-bold whitespace-nowrap transition">
-                    <i class="fa-solid fa-chart-line mr-2"></i>Thống Kê
+                    <i class="fa-solid fa-chart-line mr-2"></i>Thống kê
                 </button>
                 <button onclick="switchMainTab('favorites')" id="main-nav-favorites" class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 py-3 px-2 text-sm font-bold whitespace-nowrap transition">
-                    <i class="fa-solid fa-star mr-2"></i>Yêu Thích
+                    <i class="fa-solid fa-star mr-2"></i>Yêu thích
                 </button>
             </div>
         </div>	
@@ -190,10 +190,10 @@
                 <div class="lg:col-span-2 space-y-6 order-2 lg:order-1">
                     <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100 flex space-x-1">
                         <button id="btn-tab-table" onclick="switchTab('table')" class="flex-1 py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-1 sm:space-x-2 bg-blue-900 text-white">
-                            <i class="fa-solid fa-table-list"></i><span>Bảng Chi Tiết</span>
+                            <i class="fa-solid fa-table-list"></i><span>Bảng chi tiết</span>
                         </button>
                         <button id="btn-tab-vault" onclick="switchTab('vault')" class="flex-1 py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center space-x-1 sm:space-x-2 text-slate-600 hover:bg-slate-50">
-                            <i class="fa-solid fa-receipt"></i><span>Kho Hóa Đơn</span>
+                            <i class="fa-solid fa-receipt"></i><span>Kho hóa đơn</span>
                             <span id="invoice-count-badge" class="bg-slate-200 text-slate-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">0</span>
                         </button>
                     </div>
@@ -202,7 +202,7 @@
                     <div id="tab-table-content" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
                         <div class="px-4 sm:px-6 py-4 bg-slate-50/70 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                             <div>
-                                <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-cat text-blue-600 mr-2"></i> Nhật Ký Tiêu Dùng</h2>
+                                <h2 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-cat text-blue-600 mr-2"></i> Nhật ký tiêu dùng</h2>
                             </div>
                             <select id="filter-category" onchange="renderTable()" class="w-full sm:w-auto text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="all">Tất cả danh mục</option>
@@ -318,7 +318,7 @@
                 <!-- Cột Phải: Form nhập liệu và Biểu đồ -->
                 <div class="space-y-6 order-1 lg:order-2">
                     <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
-                        <h3 id="form-title" class="font-bold text-slate-800 text-base mb-4 flex items-center"><i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm Sản Phẩm Mới</h3>
+                        <h3 id="form-title" class="font-bold text-slate-800 text-base mb-4 flex items-center"><i id="form-icon" class="fa-solid fa-circle-plus mr-2 text-emerald-500"></i> Thêm sản phẩm mới</h3>
                         <form id="add-item-form" onsubmit="handleFormSubmit(event)" class="space-y-4 relative z-10">
                             <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tên Sản Phẩm *</label><input type="text" id="form-name" required placeholder="Ví dụ: Mì tôm ăn liền, Sách giáo trình..." class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                             <div><label class="block text-xs font-semibold text-slate-500 mb-1">Loại Sản Phẩm *</label><select id="form-category" required class="w-full border rounded-xl px-3 py-2 bg-white outline-none focus:ring-2 focus:ring-blue-500 text-sm"><option value="Thực phẩm & Ăn uống">Thực phẩm & Ăn uống</option><option value="Hóa mỹ phẩm & Vệ sinh">Hóa mỹ phẩm & Vệ sinh</option><option value="Đồ dùng gia dụng">Đồ dùng gia đình</option><option value="Y tế & Sức khỏe">Y tế & Sức khỏe</option><option value="Điện, Nước & Internet">Điện, Nước & Internet</option><option value="Khác">Khác</option></select></div>
@@ -327,7 +327,7 @@
                                 <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ngày Mua *</label><input type="date" id="form-buy-date" required class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-500 mb-1">Dự Kiến Hết</label><input type="date" id="form-expire-date" class="w-full border rounded-xl px-3 py-2 text-slate-600 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                             </div>
-                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ghi Chú</label><input type="text" id="form-notes" placeholder="Ghi chú thêm chi tiết..." class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ghi chú</label><input type="text" id="form-notes" placeholder="Ghi chú thêm chi tiết..." class="w-full border rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-sm"></div>
                             <div class="flex gap-2 pt-2">
                                 <button id="btn-cancel-edit" type="button" onclick="resetFormState()" class="hidden flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-sm">Hủy sửa</button>
                                 <button type="submit" id="btn-submit" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl transition text-sm shadow-sm">Lưu dữ liệu</button>
@@ -352,7 +352,7 @@
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i> Lịch Sử Chốt Sổ</h2>
+                    <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i> Lịch sử chốt sổ</h2>
                     <p class="text-xs text-slate-500 mt-1">Xem lại dữ liệu của các tháng đã lưu trữ</p>
                 </div>
                 <select id="analytics-month-select" onchange="renderAnalytics()" class="border border-slate-300 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 outline-none bg-slate-50 min-w-[200px]">
@@ -378,7 +378,7 @@
     <!-- ================= TRANG 3: YÊU THÍCH (FAVORITES) ================= -->
     <div id="page-favorites" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div class="mb-6">
-            <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-star text-amber-500 mr-2"></i> Sản Phẩm Yêu Thích</h2>
+            <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-star text-amber-500 mr-2"></i> Sản phẩm yêu thích</h2>
             <p class="text-xs text-slate-500 mt-1">Lưu trữ các món đồ mua thường xuyên để nhập liệu nhanh chóng.</p>
         </div>
         <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
