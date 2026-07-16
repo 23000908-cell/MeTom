@@ -795,7 +795,19 @@
 
             // SỬA LỖI 2: Chỉ hiển thị các sản phẩm CHƯA chốt sổ tháng (isArchived != true) ở giao diện chính
             const activeItems = database.filter(item => !item.isArchived);
-            const sortedDatabase = [...activeItems].sort((a, b) => categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category));
+         const sortedDatabase = [...activeItems].sort((a, b) => {
+   		 // 1. Sắp xếp theo thứ tự ưu tiên của danh mục sản phẩm
+   		 const catDiff = categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);
+  		 if (catDiff !== 0) return catDiff;
+
+  		 // 2. Sắp xếp theo ngày mua từ cũ đến mới
+  		 const dateA = new Date(a.buyDate);
+  		 const dateB = new Date(b.buyDate);
+    		 if (dateA - dateB !== 0) return dateA - dateB;
+
+    		 // 3. Sắp xếp theo bảng chữ cái tiếng Việt/Anh (không phân biệt hoa thường)
+    		 return a.name.localeCompare(b.name, 'vi', { sensitivity: 'base' });
+	});
 
             sortedDatabase.forEach((item) => {
                 if (categoryFilter !== 'all' && item.category !== categoryFilter) return;
